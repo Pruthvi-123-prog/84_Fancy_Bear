@@ -1,0 +1,179 @@
+/* C3.js Custom Styles with 3D Effects */
+
+@import url('c3/c3.css');
+
+.c3 svg {
+  font-family: var(--font-body);
+}
+
+.c3-line, .c3-lines {
+  stroke-width: 3px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.c3-bar {
+  stroke-width: 1px;
+  stroke: rgba(255,255,255,0.3);
+  filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
+  transition: all 0.3s ease;
+}
+
+.c3-bar:hover {
+  filter: brightness(1.1) drop-shadow(0 4px 12px rgba(0,0,0,0.3)) !important;
+  transform: translateY(-2px);
+}
+
+.c3-arc {
+  stroke: rgba(255,255,255,0.5);
+  stroke-width: 2px;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.15));
+  transition: all 0.3s ease;
+}
+
+.c3-arc:hover {
+  filter: brightness(1.1) drop-shadow(0 6px 12px rgba(0,0,0,0.3));
+  transform: scale(1.05);
+}
+
+.c3-tooltip-container {
+  z-index: 100;
+}
+
+.c3-tooltip {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(var(--primary-200), 0.3) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1) !important;
+  font-family: var(--font-body) !important;
+  font-size: 12px !important;
+  color: rgb(var(--neutral-700)) !important;
+}
+
+.c3-tooltip th {
+  background: transparent !important;
+  font-family: var(--font-display) !important;
+  font-weight: 600 !important;
+  color: rgb(var(--neutral-900)) !important;
+}
+
+.c3-tooltip td {
+  border: none !important;
+  font-family: var(--font-body) !important;
+}
+
+.c3-legend-item {
+  font-family: var(--font-body) !important;
+  font-size: 12px !important;
+  color: rgb(var(--neutral-700)) !important;
+}
+
+.c3-legend-item-hidden {
+  opacity: 0.5;
+}
+
+.c3-axis {
+  font-family: var(--font-body) !important;
+  font-size: 11px !important;
+  color: rgb(var(--neutral-600)) !important;
+}
+
+.c3-axis-x .tick,
+.c3-axis-y .tick {
+  stroke: rgba(var(--neutral-300), 0.5);
+}
+
+.c3-axis path,
+.c3-axis line {
+  stroke: rgba(var(--neutral-300), 0.5);
+}
+
+.c3-grid line {
+  stroke: rgba(var(--neutral-200), 0.5);
+  stroke-dasharray: 3 3;
+}
+
+.c3-grid text {
+  font-family: var(--font-body) !important;
+  font-size: 10px !important;
+  fill: rgb(var(--neutral-500)) !important;
+}
+
+/* 3D Chart Container Effects */
+.chart-3d-container {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+.chart-3d {
+  transform: rotateX(5deg) rotateY(2deg);
+  transition: transform 0.3s ease;
+  box-shadow: 
+    0 20px 40px rgba(0,0,0,0.1),
+    0 0 0 1px rgba(var(--primary-200), 0.2);
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+}
+
+.chart-3d:hover {
+  transform: rotateX(2deg) rotateY(1deg) scale(1.02);
+  box-shadow: 
+    0 30px 60px rgba(0,0,0,0.15),
+    0 0 0 1px rgba(var(--primary-300), 0.3);
+}
+
+/* Interactive Elements */
+@keyframes chartPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.chart-element-pulse {
+  animation: chartPulse 0.6s ease-in-out;
+}
+
+/* Gradient Overlays for 3D Effect */
+.chart-gradient-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.1) 0%,
+    rgba(255,255,255,0) 50%,
+    rgba(0,0,0,0.05) 100%
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Custom Loading Animation */
+.chart-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  font-family: var(--font-body);
+  color: rgb(var(--neutral-500));
+}
+
+.chart-loading::after {
+  content: '';
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(var(--primary-200), 0.3);
+  border-top: 4px solid rgb(var(--primary-500));
+  border-radius: 50%;
+  animation: chartSpin 1s linear infinite;
+  margin-left: 10px;
+}
+
+@keyframes chartSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
