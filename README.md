@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # SiteSleuth - Website Audit & Security Reporting Tool
 
 A comprehensive, modern website auditing tool built with Next.js 14 that provides detailed security, performance, SEO, and accessibility analysis.
@@ -131,3 +132,6 @@ npm run lint
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+=======
+# Cicada
+>>>>>>> 0baa070a9087a36455b10e0ba42629ac0ece0a36
