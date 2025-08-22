@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Zap, Search, Eye } from 'lucide-react';
 import { ScannerForm } from '@/components/ScannerForm';
@@ -18,6 +18,23 @@ export default function Home() {
     setScanResult(null);
   };
 
+  useEffect(() => {
+    // Handle scrolling to hash on page load
+    const hash = window.location.hash;
+    if (hash) {
+      // Wait a bit for the page to render
+      setTimeout(() => {
+        const element = document.querySelector(hash);
+        if (element) {
+          element.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      }, 100);
+    }
+  }, []);
+
   const handleExportPDF = async () => {
     if (!scanResult) return;
 
@@ -30,6 +47,7 @@ export default function Home() {
         body: JSON.stringify({
           reportId: `temp-${Date.now()}`,
           format: 'pdf',
+          scanResult: scanResult, // Pass the scan result directly
         }),
       });
 
@@ -38,14 +56,19 @@ export default function Home() {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `sitesleuth-report-${new Date().toISOString().split('T')[0]}.pdf`;
+        link.download = `auditx-report-${new Date().toISOString().split('T')[0]}.pdf`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
+      } else {
+        const errorData = await response.json();
+        console.error('Export failed:', errorData);
+        alert('Failed to export report: ' + (errorData.error || 'Unknown error'));
       }
     } catch (error) {
       console.error('Export failed:', error);
+      alert('Failed to export report. Please try again.');
     }
   };
 
@@ -77,14 +100,14 @@ export default function Home() {
               data-aos-duration="1000"
             >
               <h1 className="font-display text-5xl md:text-7xl font-black text-foreground mb-6 tracking-tight">
-                Site<span className="text-gradient">Sleuth</span>
+                Audit<span className="text-gradient">X</span>
               </h1>
               <p className="font-body text-xl md:text-2xl text-foreground/90 mb-8 max-w-3xl mx-auto font-medium">
-                Comprehensive Website Audit & Security Reporting Tool
+                Advanced Website Security & Performance Analyzer
               </p>
               <p className="font-body text-lg text-muted mb-12 max-w-2xl mx-auto">
-                Analyze your website's security, performance, SEO, and accessibility in seconds. 
-                Get detailed reports with actionable recommendations.
+                Analyze your website&apos;s security, performance, SEO, and accessibility in seconds. 
+                Get detailed reports with actionable recommendations powered by advanced AI.
               </p>
             </motion.div>
 
@@ -117,20 +140,25 @@ export default function Home() {
                   description: 'WCAG compliance, ARIA, usability'
                 }
               ].map((feature, index) => (
-                <div
+                <motion.div
                   key={feature.title}
-                  data-aos="fade-up"
-                  data-aos-delay={100 + index * 100}
-                  className="glass-card"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
+                  whileHover={{ y: -8, scale: 1.02 }}
+                  className="glass-card group relative overflow-hidden cursor-pointer"
                 >
-                  <div className="p-6">
-                    <div className="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                      <feature.icon className="h-6 w-6 text-primary" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 via-transparent to-indigo-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-bl-3xl"></div>
+                  <div className="p-6 relative z-10">
+                    <div className="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-300">
+                      <feature.icon className="h-6 w-6 text-primary group-hover:text-blue-400 transition-colors duration-300" />
                     </div>
-                    <h3 className="text-xl font-heading font-semibold text-foreground mb-3">{feature.title}</h3>
-                    <p className="text-muted">{feature.description}</p>
+                    <h3 className="text-xl font-heading font-semibold text-foreground mb-3 group-hover:text-blue-300 transition-colors duration-300">{feature.title}</h3>
+                    <p className="text-muted group-hover:text-neutral-200 transition-colors duration-300">{feature.description}</p>
                   </div>
-                </div>
+                  <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                </motion.div>
               ))}
             </motion.div>
           </div>
@@ -138,7 +166,7 @@ export default function Home() {
       </div>
 
       {/* Scanner Form */}
-      <div className="relative -mt-16 pb-20">
+      <div id="scanner" className="relative -mt-16 pb-20">
         <div className="container">
           <div data-aos="fade-up" data-aos-delay="300">
             <ScannerForm onScanComplete={handleScanComplete} />

@@ -37,17 +37,17 @@ export function Footer() {
             <Link href="/" className="flex items-center space-x-2 mb-4 animate-hover-scale">
               <Shield className="h-8 w-8 text-primary" />
               <span className="font-display text-2xl font-bold text-foreground">
-                Site<span className="text-primary">Sleuth</span>
+                Audit<span className="text-primary">X</span>
               </span>
             </Link>
             <p className="text-muted mb-6 max-w-sm">
-              Comprehensive website security, performance, and SEO auditing tool 
-              designed to keep your digital presence secure and optimized.
+              Advanced website security, performance, and SEO analysis powered by 
+              cutting-edge technology to keep your digital presence secure and optimized.
             </p>
             <div className="space-y-3 text-sm text-muted">
               <div className="flex items-center">
                 <Mail className="h-4 w-4 mr-3 text-primary" />
-                <span className="hover:text-primary transition-colors">support@sitesleuth.com</span>
+                <span className="hover:text-primary transition-colors">support@auditx.com</span>
               </div>
               <div className="flex items-center">
                 <Phone className="h-4 w-4 mr-3 text-primary" />
@@ -116,7 +116,7 @@ export function Footer() {
         <div className="mt-16 pt-8 border-t border-card-border">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-muted text-sm">
-              © {currentYear} SiteSleuth. All rights reserved. Built with Next.js 14, TypeScript, and modern web technologies.
+              © {currentYear} AuditX. All rights reserved. Built with Next.js 14, TypeScript, and modern web technologies.
             </div>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <Link href="#" className="text-muted hover:text-primary transition-colors footer-link">

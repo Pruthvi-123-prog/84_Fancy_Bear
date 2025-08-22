@@ -7,8 +7,8 @@ import { motion } from 'framer-motion';
 import { Menu, X, Shield } from 'lucide-react';
 
 const navigationItems = [
-  { name: 'Scanner', href: '/' },
   { name: 'Home', href: '/home' },
+  { name: 'Scanner', href: '/' },
   { name: 'About', href: '/about' },
   { name: 'Services', href: '/services' },
 ];
@@ -39,7 +39,7 @@ export function Navbar() {
         <Link href="/" className="flex items-center space-x-2 animate-hover-scale">
           <Shield className="h-8 w-8 text-primary transition-colors duration-300" />
           <span className="font-display text-2xl font-bold text-foreground">
-            Site<span className="text-primary">Sleuth</span>
+            Audit<span className="text-primary">X</span>
           </span>
         </Link>
 
@@ -52,15 +52,22 @@ export function Navbar() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`navbar-link text-sm font-medium ${
+                  className={`navbar-link text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded-md px-2 py-1 transition-all duration-200 ${
                     isActive ? 'navbar-link-active' : ''
                   }`}
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      e.currentTarget.click();
+                    }
+                  }}
                 >
                   {item.name}
                 </Link>
               );
             })}
-            <Link href="#contact" className="btn btn-primary btn-sm">
+            <Link href="/" className="btn btn-primary btn-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background">
               Get Started
             </Link>
           </div>
@@ -70,8 +77,10 @@ export function Navbar() {
         <div className="md:hidden">
           <button
             onClick={toggleMenu}
-            className="btn btn-outline btn-sm rounded-lg p-2"
-            aria-label="Toggle menu"
+            className="btn btn-outline btn-sm rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+            aria-label={isOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isOpen}
+            aria-controls="mobile-menu"
           >
             {isOpen ? (
               <X className="h-5 w-5" />

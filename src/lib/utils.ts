@@ -7,6 +7,10 @@ export function cn(...inputs: ClassValue[]) {
 
 export function isValidUrl(string: string): boolean {
   try {
+    // If no protocol is provided, try with https first
+    if (!string.startsWith('http://') && !string.startsWith('https://')) {
+      string = 'https://' + string;
+    }
     new URL(string);
     return true;
   } catch {

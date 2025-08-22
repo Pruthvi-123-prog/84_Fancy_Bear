@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Shield, 
@@ -12,17 +12,23 @@ import {
   Clock,
   AlertTriangle,
   CheckCircle,
-  Info
+  Info,
+  BarChart3,
+  PieChart,
+  TrendingUp,
+  Activity
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { ScanResult } from '@/lib/types';
-import { formatBytes, formatDuration, getScoreColor, getScoreLabel } from '@/lib/utils';
-import { Interactive3DChart } from '@/components/charts/Interactive3DChart';
-import '@/components/charts/chart-styles.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShieldAlt } from '@fortawesome/free-solid-svg-icons';
+import { formatBytes, formatDuration } from '@/lib/utils';
+
+// Import the new enhanced chart components
+import { D3RingChart } from '@/components/charts/D3RingChart';
+import { AdvancedLineChart } from '@/components/charts/AdvancedLineChart';
+import { Advanced3DBarChart } from '@/components/charts/Advanced3DBarChart';
+import { EnhancedChartCard } from '@/components/charts/EnhancedChartCard';
+import { ChartModal } from '@/components/charts/ChartModal';
 
 interface DashboardProps {
   scanResult: ScanResult;
@@ -30,14 +36,24 @@ interface DashboardProps {
   onExportPDF: () => void;
 }
 
-const categoryColors = {
-  security: 'text-red-500',
-  performance: 'text-primary-500',
-  seo: 'text-green-500',
-  accessibility: 'text-purple-500',
+// Utility function for scoring
+const getScoreLabel = (score: number): string => {
+  if (score >= 90) return "Excellent";
+  if (score >= 80) return "Good";
+  if (score >= 70) return "Fair";
+  if (score >= 60) return "Poor";
+  return "Critical";
 };
 
 export function Dashboard({ scanResult, onNewScan, onExportPDF }: DashboardProps) {
+  // State for showing detailed information modal
+  const [showDetailedInfo, setShowDetailedInfo] = React.useState<string | null>(null);
+  
+  // State for chart modals
+  const [showScoreModal, setShowScoreModal] = useState(false);
+  const [showDistributionModal, setShowDistributionModal] = useState(false);
+  const [showTrendsModal, setShowTrendsModal] = useState(false);
+  const [showSecurityModal, setShowSecurityModal] = useState(false);
 
   const overallScore = Math.round(
     (scanResult.security.score + 
@@ -47,28 +63,23 @@ export function Dashboard({ scanResult, onNewScan, onExportPDF }: DashboardProps
   );
 
   const chartData = [
-    { name: 'Security', score: scanResult.security.score, color: 'rgba(59, 130, 246, 0.85)' }, // Using the same blue color for all
-    { name: 'Performance', score: scanResult.performance.score, color: 'rgba(59, 130, 246, 0.85)' },
-    { name: 'SEO', score: scanResult.seo.score, color: 'rgba(59, 130, 246, 0.85)' },
-    { name: 'Accessibility', score: scanResult.accessibility.score, color: 'rgba(59, 130, 246, 0.85)' },
+    { name: 'Security', score: scanResult.security.score, color: '#3b82f6' },
+    { name: 'Performance', score: scanResult.performance.score, color: '#10b981' },
+    { name: 'SEO', score: scanResult.seo.score, color: '#f59e0b' },
+    { name: 'Accessibility', score: scanResult.accessibility.score, color: '#ef4444' },
   ];
-  
-  // State for showing detailed information modal
-  const [showDetailedInfo, setShowDetailedInfo] = React.useState<string | null>(null);
 
   const ScoreCard = ({ 
     title, 
     score, 
     icon: Icon, 
     issues, 
-    className,
     details 
   }: {
     title: string;
     score: number;
     icon: React.ElementType;
     issues: string[];
-    className?: string;
     details?: React.ReactNode;
   }) => (
     <motion.div
@@ -126,8 +137,11 @@ export function Dashboard({ scanResult, onNewScan, onExportPDF }: DashboardProps
             )}
             
             <div className="flex justify-center items-center mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <button className="text-xs flex items-center gap-1 text-blue-400 hover:text-blue-300 bg-neutral-800/80 px-3 py-1 rounded-full">
-                <Info className="h-3 w-3" />
+              <button 
+                className="text-xs flex items-center gap-1 text-blue-400 hover:text-blue-300 bg-neutral-800/80 px-3 py-1 rounded-full"
+                aria-label={`View detailed information for ${title}`}
+              >
+                <Info className="h-3 w-3" aria-hidden="true" />
                 View detailed information
               </button>
             </div>
@@ -302,95 +316,200 @@ export function Dashboard({ scanResult, onNewScan, onExportPDF }: DashboardProps
         />
       </div>
 
-      {/* Charts Section */}
+      {/* Enhanced Charts Section */}
       <div className="mt-6 space-y-8">
-        <h2 className="text-2xl font-heading font-bold bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 text-transparent bg-clip-text">Interactive Visualizations</h2>
+        <h2 className="text-2xl font-heading font-bold bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 text-transparent bg-clip-text">Advanced Analytics Dashboard</h2>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="h-full"
+          {/* Enhanced 3D Bar Chart */}
+          <EnhancedChartCard
+            title="Score Breakdown"
+            description="3D visualization of audit scores"
+            icon={BarChart3}
+            onExpand={() => setShowScoreModal(true)}
           >
-            <Card className="border border-neutral-800 bg-neutral-900/90 backdrop-blur-md h-full shadow-lg transition-all duration-300 hover:-translate-y-1 chart-3d-container">
-              <CardHeader>
-                <CardTitle className="font-heading font-semibold text-lg text-neutral-100">Score Breakdown</CardTitle>
-                <CardDescription className="font-body text-neutral-400">Compare scores across all categories</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="chart-3d relative bg-neutral-900">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.03),transparent_70%)]"></div>
-                  <div className="absolute inset-0 bg-gradient-to-b from-neutral-900/0 via-neutral-900/0 to-neutral-900 opacity-80 z-10 pointer-events-none"></div>
-                  <Interactive3DChart 
-                    data={chartData}
-                    type="bar"
-                    height={320}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+            <Advanced3DBarChart data={chartData} isPreview={true} />
+          </EnhancedChartCard>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="h-full"
+          {/* SEO Factors Analysis */}
+          <EnhancedChartCard
+            title="SEO Factors"
+            description="Current SEO analysis breakdown"
+            icon={PieChart}
+            onExpand={() => setShowDistributionModal(true)}
           >
-            <Card className="border border-neutral-800 bg-neutral-900/90 backdrop-blur-md h-full shadow-lg transition-all duration-300 hover:-translate-y-1 chart-3d-container">
-              <CardHeader>
-                <CardTitle className="font-heading font-semibold text-lg text-neutral-100">Score Distribution</CardTitle>
-                <CardDescription className="font-body text-neutral-400">Visual representation of relative scores</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="chart-3d relative bg-neutral-900">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.03),transparent_70%)]"></div>
-                  <div className="absolute inset-0 bg-gradient-to-b from-neutral-900/0 via-neutral-900/0 to-neutral-900 opacity-80 z-10 pointer-events-none"></div>
-                  <Interactive3DChart 
-                    data={chartData}
-                    type="donut"
-                    title="Score Distribution"
-                    height={320}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+            <D3RingChart 
+              data={[
+                { 
+                  name: 'Meta Tags', 
+                  score: scanResult.seo.checks.filter(c => c.name.toLowerCase().includes('meta') || c.name.toLowerCase().includes('title')).length > 0 ? 90 : 50, 
+                  color: '#10b981' 
+                },
+                { 
+                  name: 'Headings', 
+                  score: scanResult.seo.checks.filter(c => c.name.toLowerCase().includes('heading') || c.name.toLowerCase().includes('h1')).length > 0 ? 85 : 40, 
+                  color: '#3b82f6' 
+                },
+                { 
+                  name: 'Images', 
+                  score: scanResult.seo.checks.filter(c => c.name.toLowerCase().includes('image') || c.name.toLowerCase().includes('alt')).length > 0 ? 75 : 30, 
+                  color: '#f59e0b' 
+                },
+                { 
+                  name: 'Links', 
+                  score: scanResult.seo.checks.filter(c => c.name.toLowerCase().includes('link')).length > 0 ? 80 : 45, 
+                  color: '#8b5cf6' 
+                },
+              ]} 
+              isPreview={true} 
+            />
+          </EnhancedChartCard>
         </div>
 
-        {/* Additional Interactive Chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.4 }}
+        {/* Performance Metrics Breakdown */}
+        <EnhancedChartCard
+          title="Performance Metrics"
+          description="Current scan performance breakdown"
+          icon={TrendingUp}
+          onExpand={() => setShowTrendsModal(true)}
         >
-          <Card className="border border-neutral-800 bg-neutral-900/90 backdrop-blur-md shadow-lg transition-all duration-300 hover:-translate-y-1 chart-3d-container">
-            <CardHeader>
-              <CardTitle className="font-heading font-semibold text-lg text-neutral-100">Security Analysis</CardTitle>
-              <CardDescription className="font-body text-neutral-400">Breakdown of security check results</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="chart-3d relative bg-neutral-900">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.03),transparent_70%)]"></div>
-                <div className="absolute inset-0 bg-gradient-to-b from-neutral-900/0 via-neutral-900/0 to-neutral-900 opacity-80 z-10 pointer-events-none"></div>
-                <Interactive3DChart 
-                  data={[
-                    { name: 'Passed Checks', score: scanResult.security.checks.filter(c => c.status === 'pass').length, color: 'rgba(59, 130, 246, 0.9)' },
-                    { name: 'Warning Checks', score: scanResult.security.checks.filter(c => c.status === 'warning').length, color: 'rgba(59, 130, 246, 0.7)' },
-                    { name: 'Failed Checks', score: scanResult.security.checks.filter(c => c.status === 'fail').length, color: 'rgba(59, 130, 246, 0.5)' },
-                  ]}
-                  type="pie"
-                  height={350}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+          <Advanced3DBarChart 
+            data={[
+              { 
+                name: 'Load Time', 
+                score: scanResult.performance.details.loadTime ? Math.round(scanResult.performance.details.loadTime / 100) : 5, 
+                color: '#3b82f6' 
+              },
+              { 
+                name: 'TTFB', 
+                score: scanResult.performance.details.ttfb ? Math.round(scanResult.performance.details.ttfb / 100) : 3, 
+                color: '#06b6d4' 
+              },
+              { 
+                name: 'LCP', 
+                score: scanResult.performance.details.lcp ? Math.round(scanResult.performance.details.lcp / 100) : 4, 
+                color: '#8b5cf6' 
+              },
+            ]} 
+            isPreview={true} 
+            title="Performance Metrics (seconds)"
+          />
+        </EnhancedChartCard>
+
+        {/* Security Analysis Chart */}
+        <EnhancedChartCard
+          title="Security Analysis"
+          description="Detailed security check breakdown"
+          icon={Activity}
+          onExpand={() => setShowSecurityModal(true)}
+        >
+          <Advanced3DBarChart 
+            data={(() => {
+              const passedCount = scanResult.security.checks.filter(c => c.status === 'pass').length;
+              const warningCount = scanResult.security.checks.filter(c => c.status === 'warning').length;
+              const failedCount = scanResult.security.checks.filter(c => c.status === 'fail').length;
+              
+              return [
+                { name: 'Passed', score: Math.max(1, passedCount), color: '#10b981' },
+                { name: 'Warnings', score: warningCount, color: '#f59e0b' },
+                { name: 'Failed', score: failedCount, color: '#ef4444' },
+              ];
+            })()} 
+            isPreview={true}
+            title="Security Checks"
+          />
+        </EnhancedChartCard>
       </div>
+
+      {/* Chart Modals */}
+      <ChartModal
+        isOpen={showScoreModal}
+        onClose={() => setShowScoreModal(false)}
+        title="Score Breakdown - Detailed View"
+      >
+        <Advanced3DBarChart data={chartData} isPreview={false} title="Comprehensive Audit Scores" />
+      </ChartModal>
+
+      <ChartModal
+        isOpen={showDistributionModal}
+        onClose={() => setShowDistributionModal(false)}
+        title="SEO Factors Analysis - Detailed View"
+      >
+        <D3RingChart 
+          data={[
+            { 
+              name: 'Meta Tags', 
+              score: scanResult.seo.checks.filter(c => c.name.toLowerCase().includes('meta') || c.name.toLowerCase().includes('title')).length > 0 ? 90 : 50, 
+              color: '#10b981' 
+            },
+            { 
+              name: 'Headings Structure', 
+              score: scanResult.seo.checks.filter(c => c.name.toLowerCase().includes('heading') || c.name.toLowerCase().includes('h1')).length > 0 ? 85 : 40, 
+              color: '#3b82f6' 
+            },
+            { 
+              name: 'Image Optimization', 
+              score: scanResult.seo.checks.filter(c => c.name.toLowerCase().includes('image') || c.name.toLowerCase().includes('alt')).length > 0 ? 75 : 30, 
+              color: '#f59e0b' 
+            },
+            { 
+              name: 'Link Structure', 
+              score: scanResult.seo.checks.filter(c => c.name.toLowerCase().includes('link')).length > 0 ? 80 : 45, 
+              color: '#8b5cf6' 
+            },
+          ]} 
+          isPreview={false} 
+        />
+      </ChartModal>
+
+      <ChartModal
+        isOpen={showTrendsModal}
+        onClose={() => setShowTrendsModal(false)}
+        title="Performance Metrics - Detailed View"
+      >
+        <Advanced3DBarChart 
+          data={[
+            { 
+              name: 'Load Time (s)', 
+              score: scanResult.performance.details.loadTime ? Math.round(scanResult.performance.details.loadTime / 100) : 5, 
+              color: '#3b82f6' 
+            },
+            { 
+              name: 'TTFB (s)', 
+              score: scanResult.performance.details.ttfb ? Math.round(scanResult.performance.details.ttfb / 100) : 3, 
+              color: '#06b6d4' 
+            },
+            { 
+              name: 'LCP (s)', 
+              score: scanResult.performance.details.lcp ? Math.round(scanResult.performance.details.lcp / 100) : 4, 
+              color: '#8b5cf6' 
+            },
+            { 
+              name: 'Page Size (MB)', 
+              score: scanResult.performance.details.pageSize ? Math.round(scanResult.performance.details.pageSize / (1024 * 1024)) : 2, 
+              color: '#f59e0b' 
+            },
+          ]} 
+          isPreview={false} 
+          title="Detailed Performance Metrics"
+        />
+      </ChartModal>
+
+      <ChartModal
+        isOpen={showSecurityModal}
+        onClose={() => setShowSecurityModal(false)}
+        title="Security Analysis - Detailed View"
+      >
+        <Advanced3DBarChart 
+          data={[
+            { name: 'Passed Checks', score: scanResult.security.checks.filter(c => c.status === 'pass').length, color: '#10b981' },
+            { name: 'Warning Checks', score: scanResult.security.checks.filter(c => c.status === 'warning').length, color: '#f59e0b' },
+            { name: 'Failed Checks', score: scanResult.security.checks.filter(c => c.status === 'fail').length, color: '#ef4444' },
+          ]} 
+          isPreview={false}
+          title="Detailed Security Analysis"
+        />
+      </ChartModal>
 
       {/* OWASP Top 10 Security Details */}
       <motion.div
@@ -455,7 +574,7 @@ export function Dashboard({ scanResult, onNewScan, onExportPDF }: DashboardProps
                           check.status === 'warning' ? 'text-amber-400/70' : 
                           'text-red-400/70'
                         }`}>
-                          💡 {check.recommendation}
+                          {check.recommendation}
                         </p>
                       )}
                     </div>
@@ -532,8 +651,22 @@ export function Dashboard({ scanResult, onNewScan, onExportPDF }: DashboardProps
               <button 
                 onClick={() => setShowDetailedInfo(null)}
                 className="p-1 rounded-full bg-neutral-800 hover:bg-neutral-700 transition-colors"
+                aria-label="Close details panel"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-neutral-300">
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="24" 
+                  height="24" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  className="text-neutral-300"
+                  aria-hidden="true"
+                  role="img"
+                >
                   <path d="M18 6L6 18"></path>
                   <path d="M6 6L18 18"></path>
                 </svg>
@@ -545,7 +678,7 @@ export function Dashboard({ scanResult, onNewScan, onExportPDF }: DashboardProps
                 <>
                   <div className="bg-neutral-800/50 rounded-lg p-4">
                     <h3 className="text-lg font-medium text-neutral-100 mb-2">Security Score: {scanResult.security.score}</h3>
-                    <p className="text-neutral-400 mb-4">Detailed analysis of your website's security based on OWASP Top 10 guidelines.</p>
+                    <p className="text-neutral-400 mb-4">Detailed analysis of your website&apos;s security based on OWASP Top 10 guidelines.</p>
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="bg-neutral-800/80 rounded-lg p-4">
@@ -587,15 +720,15 @@ export function Dashboard({ scanResult, onNewScan, onExportPDF }: DashboardProps
                     </div>
                   </div>
                   
-                  <div className="h-72 bg-neutral-900 rounded-lg overflow-hidden">
-                    <Interactive3DChart 
+                  <div className="h-72 bg-transparent rounded-lg overflow-hidden">
+                    <Advanced3DBarChart 
                       data={[
-                        { name: 'Passed', score: scanResult.security.checks.filter(c => c.status === 'pass').length, color: 'rgba(52, 211, 153, 0.9)' },
-                        { name: 'Warning', score: scanResult.security.checks.filter(c => c.status === 'warning').length, color: 'rgba(251, 191, 36, 0.9)' },
-                        { name: 'Failed', score: scanResult.security.checks.filter(c => c.status === 'fail').length, color: 'rgba(239, 68, 68, 0.9)' },
+                        { name: 'Passed', score: scanResult.security.checks.filter(c => c.status === 'pass').length, color: '#10b981' },
+                        { name: 'Warning', score: scanResult.security.checks.filter(c => c.status === 'warning').length, color: '#f59e0b' },
+                        { name: 'Failed', score: scanResult.security.checks.filter(c => c.status === 'fail').length, color: '#ef4444' },
                       ]}
-                      type="pie"
-                      height={300}
+                      isPreview={false}
+                      title="Security Check Results"
                     />
                   </div>
                 </>
@@ -610,11 +743,11 @@ export function Dashboard({ scanResult, onNewScan, onExportPDF }: DashboardProps
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <div className="bg-neutral-800/80 rounded-lg p-4">
                         <h4 className="text-sm font-medium text-neutral-300 mb-2">Load Time</h4>
-                        <p className="text-2xl font-bold text-blue-400">{scanResult.performance.details.loadTime ? formatDuration(scanResult.performance.details.loadTime) : 'N/A'}</p>
+                        <p className="text-2xl font-bold text-blue-400">{scanResult.performance.details.loadTime ? formatDuration(scanResult.performance.details.loadTime!) : 'N/A'}</p>
                       </div>
                       <div className="bg-neutral-800/80 rounded-lg p-4">
                         <h4 className="text-sm font-medium text-neutral-300 mb-2">Page Size</h4>
-                        <p className="text-2xl font-bold text-blue-400">{scanResult.performance.details.pageSize ? formatBytes(scanResult.performance.details.pageSize) : 'N/A'}</p>
+                        <p className="text-2xl font-bold text-blue-400">{scanResult.performance.details.pageSize ? formatBytes(scanResult.performance.details.pageSize!) : 'N/A'}</p>
                       </div>
                       <div className="bg-neutral-800/80 rounded-lg p-4">
                         <h4 className="text-sm font-medium text-neutral-300 mb-2">Resources</h4>
@@ -623,15 +756,15 @@ export function Dashboard({ scanResult, onNewScan, onExportPDF }: DashboardProps
                     </div>
                   </div>
                   
-                  <div className="h-72 bg-neutral-900 rounded-lg overflow-hidden">
-                    <Interactive3DChart 
+                  <div className="h-72 bg-transparent rounded-lg overflow-hidden">
+                    <Advanced3DBarChart 
                       data={[
-                        { name: 'Load Time', score: scanResult.performance.details.loadTime || 0, color: 'rgba(59, 130, 246, 0.9)' },
-                        { name: 'TTFB', score: scanResult.performance.details.ttfb || 0, color: 'rgba(59, 130, 246, 0.7)' },
-                        { name: 'LCP', score: scanResult.performance.details.lcp || 0, color: 'rgba(59, 130, 246, 0.5)' },
+                        { name: 'Load Time', score: scanResult.performance.details.loadTime || 0, color: '#3b82f6' },
+                        { name: 'TTFB', score: scanResult.performance.details.ttfb || 0, color: '#6366f1' },
+                        { name: 'LCP', score: scanResult.performance.details.lcp || 0, color: '#8b5cf6' },
                       ]}
-                      type="bar"
-                      height={300}
+                      isPreview={false}
+                      title="Performance Metrics"
                     />
                   </div>
                 </>
@@ -683,16 +816,16 @@ export function Dashboard({ scanResult, onNewScan, onExportPDF }: DashboardProps
                     </div>
                   </div>
                   
-                  <div className="h-72 bg-neutral-900 rounded-lg overflow-hidden">
-                    <Interactive3DChart 
+                  <div className="h-72 bg-transparent rounded-lg overflow-hidden">
+                    <Advanced3DBarChart 
                       data={[
-                        { name: 'Meta Tags', score: 85, color: 'rgba(59, 130, 246, 0.9)' },
-                        { name: 'Content Quality', score: scanResult.seo.score, color: 'rgba(59, 130, 246, 0.9)' },
-                        { name: 'Mobile Optimization', score: scanResult.seo.score - 5, color: 'rgba(59, 130, 246, 0.9)' },
-                        { name: 'Page Structure', score: scanResult.seo.score + 5, color: 'rgba(59, 130, 246, 0.9)' },
+                        { name: 'Meta Tags', score: 85, color: '#10b981' },
+                        { name: 'Content Quality', score: scanResult.seo.score, color: '#3b82f6' },
+                        { name: 'Mobile Optimization', score: scanResult.seo.score - 5, color: '#6366f1' },
+                        { name: 'Page Structure', score: scanResult.seo.score + 5, color: '#8b5cf6' },
                       ]}
-                      type="bar"
-                      height={300}
+                      isPreview={false}
+                      title="SEO Analysis"
                     />
                   </div>
                 </>
@@ -744,15 +877,14 @@ export function Dashboard({ scanResult, onNewScan, onExportPDF }: DashboardProps
                     </div>
                   </div>
                   
-                  <div className="h-72 bg-neutral-900 rounded-lg overflow-hidden">
-                    <Interactive3DChart 
+                  <div className="h-72 bg-transparent rounded-lg overflow-hidden">
+                    <D3RingChart 
                       data={[
-                        { name: 'WCAG A', score: scanResult.accessibility.score + 10, color: 'rgba(59, 130, 246, 0.9)' },
-                        { name: 'WCAG AA', score: scanResult.accessibility.score, color: 'rgba(59, 130, 246, 0.9)' },
-                        { name: 'WCAG AAA', score: scanResult.accessibility.score - 15, color: 'rgba(59, 130, 246, 0.9)' },
+                        { name: 'WCAG A', score: scanResult.accessibility.score + 10, color: '#10b981' },
+                        { name: 'WCAG AA', score: scanResult.accessibility.score, color: '#3b82f6' },
+                        { name: 'WCAG AAA', score: scanResult.accessibility.score - 15, color: '#ef4444' },
                       ]}
-                      type="donut"
-                      height={300}
+                      isPreview={false}
                     />
                   </div>
                 </>

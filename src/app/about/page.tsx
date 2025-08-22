@@ -7,22 +7,22 @@ import { Shield, Users, Globe, Award, Target, Zap } from 'lucide-react';
 export default function About() {
   return (
     <div className="min-h-screen bg-neutral-950">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="text-center mb-16 relative"
+          className="text-center mb-20 relative"
         >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.08),transparent_70%)]" />
           <div className="absolute inset-0 bg-grid-white/[0.02] bg-[length:50px_50px]" />
           <div className="relative z-10">
             <h1 className="font-display text-4xl md:text-6xl font-bold text-neutral-50 mb-6">
-              About Site<span className="bg-gradient-to-r from-blue-400 to-indigo-500 text-transparent bg-clip-text">Sleuth</span>
+              About Audit<span className="bg-gradient-to-r from-blue-400 to-indigo-500 text-transparent bg-clip-text">X</span>
             </h1>
             <p className="font-body text-xl text-neutral-300 mb-8 max-w-3xl mx-auto font-medium">
-              Your comprehensive website auditing companion, designed to keep your digital presence secure, fast, and optimized.
+              Your advanced website security and performance analyzer, powered by cutting-edge technology to keep your digital presence secure, fast, and optimized.
             </p>
           </div>
         </motion.div>
@@ -39,10 +39,11 @@ export default function About() {
             <div className="bg-neutral-800/70 p-4 rounded-full inline-block mb-4">
               <Target className="h-8 w-8 text-blue-400" />
             </div>
-            <h2 className="font-display text-3xl font-bold text-neutral-50 mb-4">Our Mission</h2>
+            <h2 className="font-display text-3xl font-bold text-neutral-50 mb-4">
+              Our Mission
+            </h2>
             <p className="font-body text-lg text-neutral-300 max-w-3xl mx-auto font-regular">
-              To democratize website security and performance auditing by providing enterprise-grade 
-              analysis tools that are accessible, comprehensive, and actionable for businesses of all sizes.
+              To democratize website security and performance auditing by providing enterprise-grade analysis tools that are accessible, comprehensive, and actionable for businesses of all sizes.
             </p>
           </div>
         </motion.div>
@@ -78,14 +79,15 @@ export default function About() {
               transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
               className="bg-neutral-900/80 backdrop-blur-md border border-neutral-800 rounded-xl p-6 shadow-lg hover:shadow-blue-900/10 transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden"
             >
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.03),transparent_70%)]" />
-              <div className="relative z-10">
-                <div className="bg-neutral-800/50 p-3 rounded-lg w-14 h-14 flex items-center justify-center mb-4">
-                  <feature.icon className="h-8 w-8 text-blue-400 transition-transform duration-300 group-hover:scale-110" />
-                </div>
-                <h3 className="font-display text-xl font-semibold text-neutral-50 mb-3">{feature.title}</h3>
-                <p className="font-body text-neutral-300 font-regular">{feature.description}</p>
+              <div className="bg-neutral-800/70 p-4 rounded-full inline-block mb-4">
+                <feature.icon className="h-8 w-8 text-blue-400" />
               </div>
+              <h3 className="text-lg font-semibold text-neutral-50 mb-2">
+                {feature.title}
+              </h3>
+              <p className="text-neutral-300">
+                {feature.description}
+              </p>
             </motion.div>
           ))}
         </motion.div>
@@ -101,7 +103,7 @@ export default function About() {
           <div className="absolute inset-0 bg-grid-white/[0.01] bg-[length:30px_30px]" />
           <div className="relative z-10">
             <h2 className="font-display text-3xl font-bold text-neutral-50 text-center mb-8">
-              Why Choose <span className="bg-gradient-to-r from-blue-400 to-indigo-500 text-transparent bg-clip-text">SiteSleuth</span>?
+              Why Choose <span className="bg-gradient-to-r from-blue-400 to-indigo-500 text-transparent bg-clip-text">AuditX</span>?
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               {[
@@ -141,7 +143,7 @@ export default function About() {
               Built by <span className="bg-gradient-to-r from-blue-400 to-indigo-500 text-transparent bg-clip-text">Security Experts</span>
             </h2>
             <p className="font-body text-lg text-neutral-300 mb-8 max-w-3xl mx-auto font-regular">
-              SiteSleuth is developed by a team of cybersecurity professionals, web developers, 
+              AuditX is developed by a team of cybersecurity professionals, web developers, 
               and digital marketing experts who understand the challenges of maintaining a secure 
               and high-performing web presence.
             </p>

@@ -1,4 +1,4 @@
-import PDFDocument from 'pdfkit';
+import { jsPDF } from 'jspdf';
 import { ScanResult } from './types';
 
 export class ReportGenerator {
@@ -7,122 +7,177 @@ export class ReportGenerator {
   }
 
   static async generatePDF(scanResult: ScanResult): Promise<Buffer> {
-    return new Promise((resolve, reject) => {
-      try {
-        const doc = new PDFDocument();
-        const buffers: Buffer[] = [];
-
-        doc.on('data', buffers.push.bind(buffers));
-        doc.on('end', () => {
-          const pdfData = Buffer.concat(buffers);
-          resolve(pdfData);
-        });
-
-        // Header
-        doc.fontSize(20).text('SiteSleuth - Website Security Report', 50, 50);
-        doc.fontSize(12).text(`URL: ${scanResult.url}`, 50, 80);
-        doc.text(`Date: ${new Date(scanResult.date).toLocaleString()}`, 50, 95);
-
-        let yPosition = 130;
-
-        // Security Section
-        doc.fontSize(16).text('Security Analysis', 50, yPosition);
-        yPosition += 25;
-        doc.fontSize(12).text(`Score: ${scanResult.security.score}/100`, 50, yPosition);
-        yPosition += 15;
-
-        if (scanResult.security.issues.length > 0) {
-          doc.text('Issues Found:', 50, yPosition);
-          yPosition += 15;
-          scanResult.security.issues.forEach(issue => {
-            doc.text(`• ${issue}`, 70, yPosition);
-            yPosition += 12;
-          });
-          yPosition += 10;
-        } else {
-          doc.text('No security issues found!', 50, yPosition);
-          yPosition += 25;
-        }
-
-        // Performance Section
-        doc.fontSize(16).text('Performance Analysis', 50, yPosition);
-        yPosition += 25;
-        doc.fontSize(12).text(`Score: ${scanResult.performance.score}/100`, 50, yPosition);
-        yPosition += 15;
-
-        if (scanResult.performance.details.loadTime) {
-          doc.text(`Load Time: ${scanResult.performance.details.loadTime}ms`, 50, yPosition);
-          yPosition += 12;
-        }
-        if (scanResult.performance.details.pageSize) {
-          doc.text(`Page Size: ${Math.round(scanResult.performance.details.pageSize / 1024)}KB`, 50, yPosition);
-          yPosition += 12;
-        }
+    console.log('Starting PDF generation with jsPDF for:', scanResult.url);
+    
+    try {
+      const doc = new jsPDF();
+      
+      // Title
+      doc.setFontSize(20);
+      doc.text('AuditX Security Report', 20, 30);
+      
+      doc.setFontSize(12);
+      doc.text(`Report generated on: ${new Date().toLocaleDateString()}`, 20, 45);
+      doc.text(`Website: ${scanResult.url}`, 20, 55);
+      
+      // Overall Score
+      const overallScore = this.calculateOverallScore(scanResult);
+      doc.setFontSize(16);
+      doc.text('Overall Score', 20, 75);
+      doc.setFontSize(14);
+      doc.text(`${overallScore}/100`, 20, 90);
+      
+      let yPosition = 110;
+      
+      // Security Section
+      doc.setFontSize(16);
+      doc.text('Security Analysis', 20, yPosition);
+      yPosition += 15;
+      doc.setFontSize(12);
+      doc.text(`Score: ${scanResult.security.score}/100`, 20, yPosition);
+      yPosition += 10;
+      
+      if (scanResult.security.issues.length > 0) {
+        doc.text('Issues Found:', 20, yPosition);
         yPosition += 10;
-
-        // SEO Section
-        doc.fontSize(16).text('SEO Analysis', 50, yPosition);
-        yPosition += 25;
-        doc.fontSize(12).text(`Score: ${scanResult.seo.score}/100`, 50, yPosition);
-        yPosition += 15;
-
-        if (scanResult.seo.issues.length > 0) {
-          doc.text('Issues Found:', 50, yPosition);
-          yPosition += 15;
-          scanResult.seo.issues.forEach(issue => {
-            doc.text(`• ${issue}`, 70, yPosition);
-            yPosition += 12;
-          });
-          yPosition += 10;
-        } else {
-          doc.text('No SEO issues found!', 50, yPosition);
-          yPosition += 25;
-        }
-
-        // Accessibility Section
-        doc.fontSize(16).text('Accessibility Analysis', 50, yPosition);
-        yPosition += 25;
-        doc.fontSize(12).text(`Score: ${scanResult.accessibility.score}/100`, 50, yPosition);
-        yPosition += 15;
-
-        if (scanResult.accessibility.issues.length > 0) {
-          doc.text('Issues Found:', 50, yPosition);
-          yPosition += 15;
-          scanResult.accessibility.issues.forEach(issue => {
-            doc.text(`• ${issue}`, 70, yPosition);
-            yPosition += 12;
-          });
-          yPosition += 10;
-        } else {
-          doc.text('No accessibility issues found!', 50, yPosition);
-          yPosition += 25;
-        }
-
-        // Recommendations
-        if (scanResult.recommendations.length > 0) {
-          if (yPosition > 700) {
+        scanResult.security.issues.forEach(issue => {
+          if (yPosition > 270) {
             doc.addPage();
-            yPosition = 50;
+            yPosition = 20;
           }
-
-          doc.fontSize(16).text('Recommendations', 50, yPosition);
-          yPosition += 25;
-
-          scanResult.recommendations.forEach((recommendation, index) => {
-            if (yPosition > 750) {
-              doc.addPage();
-              yPosition = 50;
-            }
-            doc.fontSize(12).text(`${index + 1}. ${recommendation}`, 50, yPosition);
-            yPosition += 15;
-          });
-        }
-
-        doc.end();
-      } catch (error) {
-        reject(error);
+          doc.text(`• ${issue}`, 30, yPosition);
+          yPosition += 8;
+        });
+        yPosition += 10;
+      } else {
+        doc.text('No security issues found!', 20, yPosition);
+        yPosition += 20;
       }
-    });
+      
+      // Performance Section
+      if (yPosition > 240) {
+        doc.addPage();
+        yPosition = 20;
+      }
+      doc.setFontSize(16);
+      doc.text('Performance Analysis', 20, yPosition);
+      yPosition += 15;
+      doc.setFontSize(12);
+      doc.text(`Score: ${scanResult.performance.score}/100`, 20, yPosition);
+      yPosition += 10;
+      
+      // Show performance metrics instead of issues
+      const performanceMetrics = Object.entries(scanResult.performance.metrics);
+      if (performanceMetrics.length > 0) {
+        doc.text('Metrics:', 20, yPosition);
+        yPosition += 10;
+        performanceMetrics.forEach(([metric, value]) => {
+          if (yPosition > 270) {
+            doc.addPage();
+            yPosition = 20;
+          }
+          doc.text(`• ${metric}: ${value}`, 30, yPosition);
+          yPosition += 8;
+        });
+        yPosition += 10;
+      } else {
+        doc.text('No performance metrics available.', 20, yPosition);
+        yPosition += 20;
+      }
+      
+      // SEO Section
+      if (yPosition > 240) {
+        doc.addPage();
+        yPosition = 20;
+      }
+      doc.setFontSize(16);
+      doc.text('SEO Analysis', 20, yPosition);
+      yPosition += 15;
+      doc.setFontSize(12);
+      doc.text(`Score: ${scanResult.seo.score}/100`, 20, yPosition);
+      yPosition += 10;
+      
+      if (scanResult.seo.issues.length > 0) {
+        doc.text('Issues Found:', 20, yPosition);
+        yPosition += 10;
+        scanResult.seo.issues.forEach(issue => {
+          if (yPosition > 270) {
+            doc.addPage();
+            yPosition = 20;
+          }
+          doc.text(`• ${issue}`, 30, yPosition);
+          yPosition += 8;
+        });
+        yPosition += 10;
+      } else {
+        doc.text('No SEO issues found!', 20, yPosition);
+        yPosition += 20;
+      }
+      
+      // Accessibility Section
+      if (yPosition > 240) {
+        doc.addPage();
+        yPosition = 20;
+      }
+      doc.setFontSize(16);
+      doc.text('Accessibility Analysis', 20, yPosition);
+      yPosition += 15;
+      doc.setFontSize(12);
+      doc.text(`Score: ${scanResult.accessibility.score}/100`, 20, yPosition);
+      yPosition += 10;
+      
+      if (scanResult.accessibility.issues.length > 0) {
+        doc.text('Issues Found:', 20, yPosition);
+        yPosition += 10;
+        scanResult.accessibility.issues.forEach(issue => {
+          if (yPosition > 270) {
+            doc.addPage();
+            yPosition = 20;
+          }
+          doc.text(`• ${issue}`, 30, yPosition);
+          yPosition += 8;
+        });
+        yPosition += 10;
+      } else {
+        doc.text('No accessibility issues found!', 20, yPosition);
+        yPosition += 20;
+      }
+      
+      // Recommendations
+      if (scanResult.recommendations.length > 0) {
+        if (yPosition > 240) {
+          doc.addPage();
+          yPosition = 20;
+        }
+        
+        doc.setFontSize(16);
+        doc.text('Recommendations', 20, yPosition);
+        yPosition += 15;
+        
+        scanResult.recommendations.forEach((recommendation, index) => {
+          if (yPosition > 270) {
+            doc.addPage();
+            yPosition = 20;
+          }
+          doc.setFontSize(12);
+          doc.text(`${index + 1}. ${recommendation}`, 20, yPosition);
+          yPosition += 10;
+        });
+      }
+      
+      console.log('PDF generation completed with jsPDF');
+      
+      // Convert jsPDF output to Buffer
+      const pdfOutput = doc.output('arraybuffer');
+      const pdfBuffer = Buffer.from(pdfOutput);
+      
+      console.log('PDF buffer created, size:', pdfBuffer.length);
+      return pdfBuffer;
+      
+    } catch (error) {
+      console.error('Error during jsPDF generation:', error);
+      throw error;
+    }
   }
 
   static calculateOverallScore(scanResult: ScanResult): number {
@@ -150,14 +205,13 @@ export class ReportGenerator {
   }
 }
 
-// Simple in-memory storage for demo purposes
-// In a real application, you'd use a database
-class ReportStorage {
-  private static reports: Map<string, ScanResult> = new Map();
+// Storage for reports
+export class ReportStorage {
+  private static reports = new Map<string, ScanResult>();
 
-  static save(report: ScanResult): string {
-    const id = `report-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    this.reports.set(id, report);
+  static save(scanResult: ScanResult): string {
+    const id = `report-${Date.now()}`;
+    this.reports.set(id, scanResult);
     return id;
   }
 
@@ -165,17 +219,11 @@ class ReportStorage {
     return this.reports.get(id) || null;
   }
 
-  static getAll(): Array<{ id: string; report: ScanResult }> {
-    return Array.from(this.reports.entries()).map(([id, report]) => ({ id, report }));
-  }
-
-  static delete(id: string): boolean {
-    return this.reports.delete(id);
-  }
-
-  static clear(): void {
-    this.reports.clear();
+  static list(): Array<{ id: string; url: string; timestamp: string }> {
+    return Array.from(this.reports.entries()).map(([id, result]) => ({
+      id,
+      url: result.url,
+      timestamp: result.date,
+    }));
   }
 }
-
-export { ReportStorage };

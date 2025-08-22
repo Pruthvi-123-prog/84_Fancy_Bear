@@ -1,11 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Shield, Zap, Search, Eye, ArrowRight, CheckCircle, Star } from 'lucide-react';
 
 export default function HomePage() {
+  const scrollContainerRef = useRef(null);
+
   const features = [
     {
       icon: Shield,
@@ -46,25 +48,25 @@ export default function HomePage() {
     {
       name: 'Sarah Johnson',
       role: 'Web Developer',
-      content: 'SiteSleuth helped us identify critical security issues we never knew existed. The detailed reports are incredibly valuable.',
+      content: 'AuditX helped us identify critical security issues we never knew existed. The detailed reports are incredibly valuable.',
       rating: 5
     },
     {
       name: 'Mike Chen',
       role: 'Digital Marketing Manager',
-      content: 'The SEO insights from SiteSleuth improved our website rankings significantly. Easy to use and comprehensive.',
+      content: 'The SEO insights from AuditX improved our website rankings significantly. Easy to use and comprehensive.',
       rating: 5
     },
     {
       name: 'Emily Rodriguez',
       role: 'Startup Founder',
-      content: 'As a non-technical founder, SiteSleuth gives me confidence that our website is secure and optimized.',
+      content: 'As a non-technical founder, AuditX gives me confidence that our website is secure and optimized.',
       rating: 5
     }
   ];
 
   return (
-    <div className="min-h-screen bg-neutral-950">
+    <div className="min-h-screen bg-neutral-950" ref={scrollContainerRef}>
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.08),transparent_70%)]" />
@@ -77,90 +79,44 @@ export default function HomePage() {
               transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="text-center"
             >
-              <h1 className="font-display text-5xl md:text-7xl font-bold text-neutral-50 mb-6">
-                Website Security <br />
-                Made <span className="bg-gradient-to-r from-blue-400 to-indigo-500 text-transparent bg-clip-text">Simple</span>
+              <h1 className="font-display text-5xl md:text-7xl font-black text-neutral-50 mb-6 tracking-tight">
+                Audit<span className="text-gradient">X</span>
               </h1>
-              <p className="font-body text-xl md:text-2xl text-neutral-300 mb-8 max-w-4xl mx-auto font-medium">
-                Comprehensive website auditing that identifies vulnerabilities, optimizes performance, 
-                and ensures your site meets modern web standards.
+              <p className="font-body text-xl md:text-2xl text-neutral-50/90 mb-8 max-w-3xl mx-auto font-medium">
+                Advanced Website Security & Performance Analyzer
               </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                <Link
-                  href="/"
-                  className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-neutral-50 font-semibold rounded-lg transition-all duration-300 shadow-lg hover:shadow-blue-700/20 font-body"
-                >
-                  Start Free Scan
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-                <Link
-                  href="/services"
-                  className="inline-flex items-center px-8 py-4 bg-neutral-900/80 hover:bg-neutral-800/80 backdrop-blur-md text-neutral-50 font-semibold rounded-lg transition-all duration-300 border border-neutral-700/50 hover:border-neutral-600/50 font-body"
-                >
-                  Learn More
-                </Link>
-              </div>
-
-              {/* Trust Indicators */}
-              <div className="flex flex-wrap justify-center items-center gap-8 text-neutral-400 text-sm stagger-children">
-                {[
-                  { icon: CheckCircle, text: 'No Registration Required' },
-                  { icon: CheckCircle, text: 'OWASP Compliant' },
-                  { icon: CheckCircle, text: 'Instant Results' }
-                ].map((item, index) => (
-                  <motion.div
-                    key={item.text}
-                    className="flex items-center animate-slide-up"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.8 + index * 0.1 }}
-                  >
-                    <item.icon className="h-4 w-4 text-green-400 mr-2" />
-                    <span className="font-body font-medium">{item.text}</span>
-                  </motion.div>
-                ))}
-              </div>
+              <p className="font-body text-lg text-neutral-300 mb-12 max-w-2xl mx-auto">
+                Analyze your website&apos;s security, performance, SEO, and accessibility in seconds. 
+                Get detailed reports with actionable recommendations powered by advanced AI.
+              </p>
             </motion.div>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-20 relative">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(59,130,246,0.05),transparent_70%)]" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-center mb-16"
-          >
-            <h2 className="font-display text-4xl font-bold text-neutral-50 mb-6">
-              Everything You Need to <span className="bg-gradient-to-r from-blue-400 to-indigo-500 text-transparent bg-clip-text">Secure Your Website</span>
-            </h2>
-            <p className="font-body text-xl text-neutral-300 max-w-3xl mx-auto font-regular">
-              Our comprehensive platform covers all aspects of website security, performance, and optimization.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 stagger-children">
-            {features.map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
-                className="bg-neutral-900/80 backdrop-blur-md border border-neutral-800 shadow-lg hover:shadow-blue-900/10 rounded-xl p-6 transition-all duration-300 hover:-translate-y-1 group"
-              >
-                <div className="bg-neutral-800/50 p-3 rounded-lg w-14 h-14 flex items-center justify-center mb-4">
-                  <feature.icon className={`h-8 w-8 text-blue-400 group-hover:scale-110 transition-transform duration-300`} />
-                </div>
-                <h3 className="font-display text-xl font-semibold text-neutral-50 mb-3">{feature.title}</h3>
-                <p className="font-body text-neutral-300 font-regular">{feature.description}</p>
-              </motion.div>
-            ))}
-          </div>
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {features.map((feature, idx) => (
+            <motion.div
+              key={feature.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 + idx * 0.1 }}
+              className="bg-neutral-900/80 backdrop-blur-md border border-neutral-800 rounded-xl p-6 shadow-lg hover:shadow-blue-900/20 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:scale-105 group relative overflow-hidden hover:border-blue-500/30"
+            >
+              <div className="bg-neutral-800/70 p-4 rounded-full inline-block mb-4 group-hover:bg-blue-900/50 group-hover:scale-110 transition-all duration-300">
+                <feature.icon className={`h-8 w-8 ${feature.color} group-hover:text-blue-300 transition-colors duration-300`} />
+              </div>
+              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <h3 className="text-lg font-semibold text-neutral-50 mb-2 group-hover:text-blue-300 transition-colors duration-300">
+                {feature.title}
+              </h3>
+              <p className="text-neutral-300 group-hover:text-neutral-200 transition-colors duration-300">
+                {feature.description}
+              </p>
+            </motion.div>
+          ))}
         </div>
       </section>
 
@@ -176,10 +132,10 @@ export default function HomePage() {
               transition={{ duration: 0.8, delay: 0.2 }}
             >
               <h2 className="font-display text-4xl font-bold text-neutral-50 mb-6">
-                Why Choose <span className="bg-gradient-to-r from-blue-400 to-indigo-500 text-transparent bg-clip-text">SiteSleuth</span>?
+                Why Choose <span className="bg-gradient-to-r from-blue-400 to-indigo-500 text-transparent bg-clip-text">AuditX</span>?
               </h2>
               <p className="font-body text-lg text-neutral-300 mb-8 font-regular">
-                Join thousands of developers, marketers, and business owners who trust SiteSleuth 
+                Join thousands of developers, marketers, and business owners who trust AuditX 
                 to keep their websites secure and optimized.
               </p>
               
@@ -205,11 +161,12 @@ export default function HomePage() {
               initial={{ opacity: 0, x: 40 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="bg-neutral-900/80 backdrop-blur-md border border-neutral-800 rounded-2xl p-8 shadow-lg hover:shadow-blue-900/10 transition-all duration-300 hover:-translate-y-1"
+              className="bg-neutral-900/80 backdrop-blur-md border border-neutral-800 rounded-2xl p-8 shadow-lg hover:shadow-blue-900/20 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:scale-105 hover:border-blue-500/30 group"
             >
               <div className="text-center mb-8">
-                <div className="font-display text-5xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 text-transparent bg-clip-text mb-2">10,000+</div>
-                <div className="font-body text-neutral-300 font-medium">Websites Scanned</div>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+                <div className="font-display text-5xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 text-transparent bg-clip-text mb-2 group-hover:scale-110 transition-transform duration-300">10,000+</div>
+                <div className="font-body text-neutral-300 font-medium group-hover:text-neutral-200 transition-colors duration-300">Websites Scanned</div>
               </div>
               
               <div className="grid grid-cols-2 gap-6 text-center">
@@ -251,7 +208,7 @@ export default function HomePage() {
               Trusted by <span className="bg-gradient-to-r from-blue-400 to-indigo-500 text-transparent bg-clip-text">Professionals</span>
             </h2>
             <p className="font-body text-xl text-neutral-300 max-w-3xl mx-auto font-regular">
-              See what our users have to say about SiteSleuth.
+              See what our users have to say about AuditX.
             </p>
           </motion.div>
 
@@ -262,17 +219,18 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
-                className="bg-neutral-900/80 backdrop-blur-md border border-neutral-800 rounded-xl p-6 shadow-lg hover:shadow-blue-900/10 transition-all duration-300 hover:-translate-y-1 group"
+                className="bg-neutral-900/80 backdrop-blur-md border border-neutral-800 rounded-xl p-6 shadow-lg hover:shadow-blue-900/20 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:scale-105 group hover:border-blue-500/30 relative overflow-hidden"
               >
                 <div className="flex items-center mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 text-blue-400 fill-current group-hover:scale-110 transition-transform duration-300" style={{ transitionDelay: `${i * 50}ms` }} />
+                    <Star key={i} className="h-5 w-5 text-blue-400 fill-current group-hover:scale-110 group-hover:text-blue-300 transition-all duration-300" style={{ transitionDelay: `${i * 50}ms` }} />
                   ))}
                 </div>
-                <p className="font-body text-neutral-300 mb-4 font-regular">"{testimonial.content}"</p>
+                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl"></div>
+                <p className="font-body text-neutral-300 mb-4 font-regular group-hover:text-neutral-200 transition-colors duration-300">&ldquo;{testimonial.content}&rdquo;</p>
                 <div>
-                  <div className="font-display font-semibold text-neutral-50">{testimonial.name}</div>
-                  <div className="font-body text-neutral-400 text-sm font-regular">{testimonial.role}</div>
+                  <div className="font-display font-semibold text-neutral-50 group-hover:text-blue-300 transition-colors duration-300">{testimonial.name}</div>
+                  <div className="font-body text-neutral-400 text-sm font-regular group-hover:text-neutral-300 transition-colors duration-300">{testimonial.role}</div>
                 </div>
               </motion.div>
             ))}
@@ -297,7 +255,7 @@ export default function HomePage() {
               Get started with a comprehensive security audit in less than 60 seconds.
             </p>
             <Link
-              href="/"
+              href="/#scanner"
               className="inline-flex items-center px-12 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-neutral-50 font-semibold rounded-lg transition-all duration-300 text-lg shadow-lg hover:shadow-blue-700/20 font-body"
             >
               Start Your Free Scan Now

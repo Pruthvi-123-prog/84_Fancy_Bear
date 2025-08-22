@@ -25,6 +25,7 @@ export function ScannerForm({ onScanComplete }: ScannerFormProps) {
   const [url, setUrl] = useState('');
   const [isScanning, setIsScanning] = useState(false);
   const [currentStage, setCurrentStage] = useState(0);
+  const [completedStages, setCompletedStages] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
 
@@ -35,7 +36,7 @@ export function ScannerForm({ onScanComplete }: ScannerFormProps) {
     }
     
     if (!isValidUrl(urlString)) {
-      setValidationError('Please enter a valid URL (e.g., https://example.com)');
+      setValidationError('Please enter a valid domain or URL (e.g., example.com or https://example.com)');
       return false;
     }
 
@@ -49,15 +50,27 @@ export function ScannerForm({ onScanComplete }: ScannerFormProps) {
     setIsScanning(true);
     setError(null);
     setCurrentStage(0);
+    setCompletedStages(0);
+
+    let progressInterval: NodeJS.Timeout | null = null;
 
     try {
-      // Simulate progress through stages
-      for (let i = 0; i < scanStages.length; i++) {
-        setCurrentStage(i);
-        await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate work
-      }
+      // Start progress simulation
+      progressInterval = setInterval(() => {
+        setCompletedStages(prev => {
+          const next = prev + 1;
+          if (next <= 4) {
+            setCurrentStage(next - 1);
+            return next;
+          }
+          return prev;
+        });
+      }, 3000); // Move to next stage every 3 seconds
 
-      // Perform actual scan
+      // Start the first stage
+      setCurrentStage(0);
+      
+      // Call the API which will perform all scans
       const response = await fetch('/api/scan', {
         method: 'POST',
         headers: {
@@ -66,6 +79,12 @@ export function ScannerForm({ onScanComplete }: ScannerFormProps) {
         body: JSON.stringify({ url }),
       });
 
+      // Clear the progress interval
+      if (progressInterval) {
+        clearInterval(progressInterval);
+        progressInterval = null;
+      }
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || errorData.error || 'Failed to scan website');
@@ -73,20 +92,38 @@ export function ScannerForm({ onScanComplete }: ScannerFormProps) {
 
       const data = await response.json();
       
-      if (data.success && onScanComplete) {
-        onScanComplete(data.data);
-      } else {
+      // Mark all stages as complete when scan finishes
+      setCompletedStages(4);
+      setCurrentStage(3); // Last stage (0-indexed)
+      
+      // Wait a moment to show completion, then redirect
+      setTimeout(() => {
+        if (data.success && onScanComplete) {
+          onScanComplete(data.data);
+        }
+      }, 1000);
+
+      if (!data.success) {
         throw new Error('Invalid response from server');
       }
     } catch (err) {
+      // Make sure to clear interval on error
+      if (progressInterval) {
+        clearInterval(progressInterval);
+      }
       setError(err instanceof Error ? err.message : 'An unexpected error occurred');
     } finally {
+      // Clean up
+      if (progressInterval) {
+        clearInterval(progressInterval);
+      }
       setIsScanning(false);
       setCurrentStage(0);
+      setCompletedStages(0);
     }
   };
 
-  const progress = isScanning ? ((currentStage + 1) / scanStages.length) * 100 : 0;
+  const progress = isScanning ? (completedStages / scanStages.length) * 100 : 0;
 
   return (
     <motion.div
@@ -102,16 +139,20 @@ export function ScannerForm({ onScanComplete }: ScannerFormProps) {
             Website Scanner
           </CardTitle>
           <CardDescription className="text-base">
-            Enter a website URL to perform a comprehensive security, performance, SEO, and accessibility audit
+            Enter a domain name (e.g., example.com) or full URL to perform a comprehensive security, performance, SEO, and accessibility audit. AuditX will automatically detect the best protocol (HTTP/HTTPS).
           </CardDescription>
         </CardHeader>
         
         <CardContent className="space-y-6">
           <div className="space-y-2">
+            <label htmlFor="url-input" className="text-sm font-medium text-foreground sr-only">
+              Website URL to scan
+            </label>
             <div className="flex gap-2">
               <Input
+                id="url-input"
                 type="url"
-                placeholder="https://example.com"
+                placeholder="example.com or https://example.com"
                 value={url}
                 onChange={(e) => {
                   setUrl(e.target.value);
@@ -120,43 +161,50 @@ export function ScannerForm({ onScanComplete }: ScannerFormProps) {
                   }
                 }}
                 onBlur={(e) => validateUrl(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !isScanning && !validationError) {
+                    e.preventDefault();
+                    handleScan();
+                  }
+                }}
                 disabled={isScanning}
-                className={validationError ? 'border-red-500' : ''}
+                className={validationError ? 'border-red-500 focus:border-red-500' : 'focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20'}
+                aria-invalid={!!validationError}
+                aria-describedby={validationError ? "url-error" : undefined}
+                autoComplete="url"
               />
               <Button 
                 onClick={handleScan} 
                 disabled={isScanning || !!validationError}
-                className="min-w-[100px]"
+                className="min-w-[100px] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                aria-label={isScanning ? 'Scanning in progress' : 'Start security and performance scan'}
               >
                 {isScanning ? 'Scanning...' : 'Start Scan'}
               </Button>
             </div>
             
+            {validationError && (
+              <div id="url-error" className="flex items-center gap-2 text-red-500 text-sm" role="alert">
+                <AlertTriangle className="h-4 w-4" aria-hidden="true" />
+                <span>{validationError}</span>
+              </div>
+            )}
+            
             {!isScanning && !url && (
               <div className="flex flex-wrap gap-2 text-xs">
                 <span className="text-muted-foreground">Try:</span>
-                {['https://example.com', 'https://google.com', 'https://github.com'].map((demoUrl) => (
+                {['example.com', 'google.com', 'https://github.com', 'http://httpforever.com'].map((demoUrl) => (
                   <button
                     key={demoUrl}
                     type="button"
                     onClick={() => setUrl(demoUrl)}
-                    className="px-2 py-1 bg-muted hover:bg-muted/80 rounded text-muted-foreground hover:text-foreground transition-colors"
+                    className="px-2 py-1 bg-muted hover:bg-muted/80 rounded text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
+                    aria-label={`Use example URL: ${demoUrl}`}
                   >
                     {demoUrl}
                   </button>
                 ))}
               </div>
-            )}
-            
-            {validationError && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                className="flex items-center gap-2 text-sm text-red-500"
-              >
-                <AlertTriangle className="h-4 w-4" />
-                {validationError}
-              </motion.div>
             )}
           </div>
 

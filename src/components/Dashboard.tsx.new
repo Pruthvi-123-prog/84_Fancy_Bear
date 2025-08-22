@@ -444,7 +444,7 @@ export function Dashboard({ scanResult, onNewScan, onExportPDF }: DashboardProps
                           check.status === 'warning' ? 'text-amber-400/70' : 
                           'text-red-400/70'
                         }`}>
-                          💡 {check.recommendation}
+                          {check.recommendation}
                         </p>
                       )}
                     </div>

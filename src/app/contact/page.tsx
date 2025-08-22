@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, MessageSquare, Phone, MapPin, Clock, Send } from 'lucide-react';
+import ScrollReveal from '../ScrollReveal';
 
 export default function Contact() {
+  const scrollContainerRef = useRef(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -38,7 +40,7 @@ export default function Contact() {
     {
       icon: Mail,
       title: 'Email',
-      details: 'support@sitesleuth.com',
+      details: 'support@auditx.com',
       description: 'Send us an email anytime'
     },
     {
@@ -81,7 +83,7 @@ export default function Contact() {
   ];
 
   return (
-    <div className="min-h-screen bg-neutral-950">
+    <div className="min-h-screen bg-neutral-950" ref={scrollContainerRef}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Hero Section */}
         <motion.div
@@ -93,12 +95,12 @@ export default function Contact() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.08),transparent_70%)]" />
           <div className="absolute inset-0 bg-grid-white/[0.02] bg-[length:50px_50px]" />
           <div className="relative z-10">
-            <h1 className="font-display text-4xl md:text-6xl font-bold text-neutral-50 mb-6">
+            <ScrollReveal scrollContainerRef={scrollContainerRef} containerClassName="inline-block w-full" textClassName="font-display text-4xl md:text-6xl font-bold text-neutral-50 mb-6">
               Get In <span className="bg-gradient-to-r from-blue-400 to-indigo-500 text-transparent bg-clip-text">Touch</span>
-            </h1>
-            <p className="font-body text-xl text-neutral-300 mb-8 max-w-3xl mx-auto">
-              Have questions about our website auditing services? We're here to help you secure and optimize your digital presence.
-            </p>
+            </ScrollReveal>
+            <ScrollReveal scrollContainerRef={scrollContainerRef} containerClassName="w-full" textClassName="font-body text-xl text-neutral-300 mb-8 max-w-3xl mx-auto">
+              Have questions about our website auditing services? We&apos;re here to help you secure and optimize your digital presence.
+            </ScrollReveal>
           </div>
         </motion.div>
 
@@ -126,7 +128,7 @@ export default function Contact() {
                   <Send className="h-8 w-8 text-white" />
                 </div>
                 <h3 className="text-xl font-semibold text-neutral-50 mb-2">Message Sent!</h3>
-                <p className="text-neutral-300">Thank you for reaching out. We'll get back to you soon.</p>
+                <p className="text-neutral-300">Thank you for reaching out. We&apos;ll get back to you soon.</p>
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -284,27 +286,27 @@ export default function Contact() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="relative"
         >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.03),transparent_70%)]" />
-          <div className="relative z-10">
-            <h2 className="font-display text-3xl font-bold text-neutral-50 text-center mb-8">
-              Frequently <span className="bg-gradient-to-r from-blue-400 to-indigo-500 text-transparent bg-clip-text">Asked Questions</span>
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {faqItems.map((faq, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.7 + index * 0.1 }}
-                  className="bg-neutral-900/80 backdrop-blur-md border border-neutral-800 rounded-xl p-6 shadow-lg hover:shadow-blue-900/10 transition-all duration-300"
-                >
-                  <h3 className="text-lg font-semibold text-neutral-50 mb-3">{faq.question}</h3>
-                  <p className="text-neutral-300">{faq.answer}</p>
-                </motion.div>
-              ))}
-            </div>
+          <ScrollReveal scrollContainerRef={scrollContainerRef} containerClassName="w-full" textClassName="text-3xl font-bold text-white text-center mb-8">
+            Frequently Asked Questions
+          </ScrollReveal>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {faqItems.map((faq, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.7 + index * 0.1 }}
+                className="bg-neutral-900/80 backdrop-blur-md border border-neutral-800 rounded-xl p-6 shadow-lg hover:shadow-blue-900/10 transition-all duration-300"
+              >
+                <ScrollReveal scrollContainerRef={scrollContainerRef} containerClassName="w-full" textClassName="text-lg font-semibold text-white mb-3">
+                  {faq.question}
+                </ScrollReveal>
+                <ScrollReveal scrollContainerRef={scrollContainerRef} containerClassName="w-full" textClassName="text-gray-300">
+                  {faq.answer}
+                </ScrollReveal>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
       </div>

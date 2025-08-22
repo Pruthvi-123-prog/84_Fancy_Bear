@@ -1,0 +1,68 @@
+/* Enhanced ScrollReveal animation styling */
+.scroll-reveal {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  perspective: 1000px;
+}
+
+.scroll-reveal-text {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  line-height: 1.2;
+}
+
+.scroll-reveal .word {
+  margin-right: 0.25em;
+  display: inline-block;
+  transform-origin: center bottom;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  cursor: default;
+}
+
+.scroll-reveal .word:hover {
+  transform: translateY(-2px) scale(1.05);
+  color: #3b82f6;
+  text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+  filter: brightness(1.2);
+}
+
+.scroll-reveal .word::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  transition: width 0.3s ease;
+}
+
+.scroll-reveal .word:hover::after {
+  width: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .scroll-reveal .word {
+    margin-right: 0.2em;
+  }
+}
+
+/* Animation keyframes for enhanced effects */
+@keyframes glow-pulse {
+  0%, 100% {
+    text-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(59, 130, 246, 0.6), 0 0 30px rgba(59, 130, 246, 0.4);
+  }
+}
+
+.scroll-reveal .word.animate-glow {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
