@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView, useMotionValue, useTransform, animate } from 'framer-motion';
+import type { AnimateControls } from '../lib/framerMotionTypes';
 
 interface CounterAnimationProps {
   from: number;
@@ -26,7 +27,7 @@ export function CounterAnimation({
   const [displayValue, setDisplayValue] = useState(from);
 
   useEffect(() => {
-    let controls: any;
+  let controls: AnimateControls | undefined;
     if (isInView) {
       controls = animate(count, to, {
         duration,
