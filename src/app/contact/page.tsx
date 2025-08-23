@@ -84,37 +84,37 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen bg-neutral-950" ref={scrollContainerRef}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16 relative"
+          className="text-center mb-12 sm:mb-16 relative"
         >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.08),transparent_70%)]" />
           <div className="absolute inset-0 bg-grid-white/[0.02] bg-[length:50px_50px]" />
           <div className="relative z-10">
-            <ScrollReveal scrollContainerRef={scrollContainerRef} containerClassName="inline-block w-full" textClassName="font-display text-4xl md:text-6xl font-bold text-neutral-50 mb-6">
+            <ScrollReveal scrollContainerRef={scrollContainerRef} containerClassName="inline-block w-full" textClassName="font-display text-3xl sm:text-4xl md:text-6xl font-bold text-neutral-50 mb-4 sm:mb-6">
               Get In <span className="bg-gradient-to-r from-blue-400 to-indigo-500 text-transparent bg-clip-text">Touch</span>
             </ScrollReveal>
-            <ScrollReveal scrollContainerRef={scrollContainerRef} containerClassName="w-full" textClassName="font-body text-xl text-neutral-300 mb-8 max-w-3xl mx-auto">
+            <ScrollReveal scrollContainerRef={scrollContainerRef} containerClassName="w-full" textClassName="font-body text-lg sm:text-xl text-neutral-300 mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed">
               Have questions about our website auditing services? We&apos;re here to help you secure and optimize your digital presence.
             </ScrollReveal>
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 mb-12 sm:mb-16">
           {/* Contact Form */}
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="bg-neutral-900/80 backdrop-blur-md border border-neutral-800 rounded-2xl p-8 shadow-lg relative overflow-hidden"
+            className="bg-neutral-900/80 backdrop-blur-md border border-neutral-800 rounded-2xl p-6 sm:p-8 shadow-lg relative overflow-hidden"
           >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(59,130,246,0.05),transparent_70%)]" />
             <div className="relative z-10">
-              <h2 className="font-display text-3xl font-bold text-neutral-50 mb-6">
+              <h2 className="font-display text-2xl sm:text-3xl font-bold text-neutral-50 mb-4 sm:mb-6">
                 Send Us a <span className="bg-gradient-to-r from-blue-400 to-indigo-500 text-transparent bg-clip-text">Message</span>
               </h2>
             

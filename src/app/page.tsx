@@ -6,6 +6,8 @@ import { Shield, Zap, Search, Eye } from 'lucide-react';
 import { ScannerForm } from '@/components/ScannerForm';
 import { Dashboard } from '@/components/Dashboard';
 import { ScanResult } from '@/lib/types';
+import { CounterAnimation } from '@/components/CounterAnimation';
+import { TouchResponsive } from '@/components/TouchResponsive';
 
 export default function Home() {
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
@@ -74,7 +76,7 @@ export default function Home() {
 
   if (scanResult) {
     return (
-      <div className="min-h-screen p-4 md:p-8">
+      <div className="min-h-screen">
         <Dashboard
           scanResult={scanResult}
           onNewScan={handleNewScan}
@@ -90,7 +92,7 @@ export default function Home() {
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-accent-purple/5" />
         <div className="relative z-10 pt-16 pb-24">
-          <div className="container">
+          <div className="container-full">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -109,6 +111,26 @@ export default function Home() {
                 Analyze your website&apos;s security, performance, SEO, and accessibility in seconds. 
                 Get detailed reports with actionable recommendations powered by advanced AI.
               </p>
+              <div className="flex flex-wrap justify-center gap-8 mb-12 text-sm text-muted/80">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-primary">
+                    <CounterAnimation from={0} to={100} duration={2} suffix="%" />
+                  </span>
+                  <span>Accurate</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-primary">
+                    <CounterAnimation from={0} to={60} duration={2.5} suffix="s" />
+                  </span>
+                  <span>Scan Time</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-primary">
+                    <CounterAnimation from={0} to={50} duration={2.2} suffix="+" />
+                  </span>
+                  <span>Security Checks</span>
+                </div>
+              </div>
             </motion.div>
 
             {/* Feature Grid */}
@@ -140,25 +162,28 @@ export default function Home() {
                   description: 'WCAG compliance, ARIA, usability'
                 }
               ].map((feature, index) => (
-                <motion.div
+                <TouchResponsive
                   key={feature.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
-                  whileHover={{ y: -8, scale: 1.02 }}
+                  hoverScale={1.02}
                   className="glass-card group relative overflow-hidden cursor-pointer"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 via-transparent to-indigo-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                  <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-bl-3xl"></div>
-                  <div className="p-6 relative z-10">
-                    <div className="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-300">
-                      <feature.icon className="h-6 w-6 text-primary group-hover:text-blue-400 transition-colors duration-300" />
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
+                    className="h-full"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 via-transparent to-indigo-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-bl-3xl"></div>
+                    <div className="p-6 relative z-10">
+                      <div className="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-300">
+                        <feature.icon className="h-6 w-6 text-primary group-hover:text-blue-400 transition-colors duration-300" />
+                      </div>
+                      <h3 className="text-xl font-heading font-semibold text-foreground mb-3 group-hover:text-blue-300 transition-colors duration-300">{feature.title}</h3>
+                      <p className="text-muted group-hover:text-neutral-200 transition-colors duration-300">{feature.description}</p>
                     </div>
-                    <h3 className="text-xl font-heading font-semibold text-foreground mb-3 group-hover:text-blue-300 transition-colors duration-300">{feature.title}</h3>
-                    <p className="text-muted group-hover:text-neutral-200 transition-colors duration-300">{feature.description}</p>
-                  </div>
-                  <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
-                </motion.div>
+                  </motion.div>
+                </TouchResponsive>
               ))}
             </motion.div>
           </div>
@@ -167,7 +192,7 @@ export default function Home() {
 
       {/* Scanner Form */}
       <div id="scanner" className="relative -mt-16 pb-20">
-        <div className="container">
+        <div className="container-full">
           <div data-aos="fade-up" data-aos-delay="300">
             <ScannerForm onScanComplete={handleScanComplete} />
           </div>

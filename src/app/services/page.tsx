@@ -3,6 +3,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Zap, Search, Eye, FileText, AlertTriangle, Globe, Lock } from 'lucide-react';
+import { CounterAnimation } from '@/components/CounterAnimation';
+import { TouchResponsive } from '@/components/TouchResponsive';
 
 export default function Services() {
   
@@ -90,29 +92,29 @@ export default function Services() {
 
   return (
     <div className="min-h-screen bg-neutral-950">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <div className="container-full py-16 sm:py-20">
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-20 relative"
+          className="text-center mb-16 sm:mb-20 relative"
         >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.08),transparent_70%)]" />
           <div className="absolute inset-0 bg-grid-white/[0.02] bg-[length:50px_50px]" />
           <div className="relative z-10">
-            <h1 className="font-display text-4xl md:text-6xl font-bold text-neutral-50 mb-6">
+            <h1 className="font-display text-3xl sm:text-4xl md:text-6xl font-bold text-neutral-50 mb-4 sm:mb-6">
               Our <span className="bg-gradient-to-r from-blue-400 to-indigo-500 text-transparent bg-clip-text">Services</span>
             </h1>
-            <p className="text-xl text-neutral-300 mb-8 max-w-3xl mx-auto">
+            <p className="text-lg sm:text-xl text-neutral-300 mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed">
               From security analysis to performance optimization, we provide comprehensive website auditing solutions for businesses of all sizes.
             </p>
           </div>
         </motion.div>
 
         {/* Main Services Section */}
-        <div className="mb-20">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="mb-16 sm:mb-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
             {services.map((service, index) => (
               <motion.div
                 key={service.title}
@@ -123,12 +125,12 @@ export default function Services() {
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${service.bgColor} opacity-80`}></div>
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.05),transparent_70%)]" />
-                <div className="relative p-8 z-10">
-                  <div className="bg-neutral-800/50 p-3 rounded-lg inline-block mb-4">
-                    <service.icon className={`h-6 w-6 ${service.color}`} />
+                <div className="relative p-6 sm:p-8 z-10">
+                  <div className="bg-neutral-800/50 p-2.5 sm:p-3 rounded-lg inline-block mb-4">
+                    <service.icon className={`h-5 w-5 sm:h-6 sm:w-6 ${service.color}`} />
                   </div>
-                  <h3 className="text-2xl font-semibold text-neutral-50 mb-4">{service.title}</h3>
-                  <p className="text-neutral-300 mb-6">
+                  <h3 className="text-xl sm:text-2xl font-semibold text-neutral-50 mb-3 sm:mb-4">{service.title}</h3>
+                  <p className="text-sm sm:text-base text-neutral-300 mb-5 sm:mb-6 leading-relaxed">
                     {service.description}
                   </p>
                   <div className="space-y-2">

@@ -226,4 +226,8 @@ export class ReportStorage {
       timestamp: result.date,
     }));
   }
+
+  static getAll(): Array<{ id: string; url: string; timestamp: string }> {
+    return this.list();
+  }
 }

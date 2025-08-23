@@ -130,25 +130,25 @@ export function ScannerForm({ onScanComplete }: ScannerFormProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="w-full max-w-2xl mx-auto"
+      className="w-full max-w-2xl mx-auto px-4 sm:px-6"
     >
-      <Card className="border-2">
-        <CardHeader className="text-center">
-          <CardTitle className="flex items-center justify-center gap-2 text-2xl">
-            <Search className="h-6 w-6 text-blue-500" />
-            Website Scanner
+      <Card className="border-2 shadow-xl">
+        <CardHeader className="text-center px-4 sm:px-6 py-6">
+          <CardTitle className="flex items-center justify-center gap-2 text-xl sm:text-2xl">
+            <Search className="h-5 w-5 sm:h-6 sm:w-6 text-blue-500 flex-shrink-0" />
+            <span className="break-words">Website Scanner</span>
           </CardTitle>
-          <CardDescription className="text-base">
+          <CardDescription className="text-sm sm:text-base text-muted-foreground leading-relaxed">
             Enter a domain name (e.g., example.com) or full URL to perform a comprehensive security, performance, SEO, and accessibility audit. AuditX will automatically detect the best protocol (HTTP/HTTPS).
           </CardDescription>
         </CardHeader>
         
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-6 px-4 sm:px-6 pb-6">
           <div className="space-y-2">
             <label htmlFor="url-input" className="text-sm font-medium text-foreground sr-only">
               Website URL to scan
             </label>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-3">
               <Input
                 id="url-input"
                 type="url"
@@ -168,7 +168,7 @@ export function ScannerForm({ onScanComplete }: ScannerFormProps) {
                   }
                 }}
                 disabled={isScanning}
-                className={validationError ? 'border-red-500 focus:border-red-500' : 'focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20'}
+                className={`flex-1 h-12 px-4 text-base sm:text-sm ${validationError ? 'border-red-500 focus:border-red-500' : 'focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20'}`}
                 aria-invalid={!!validationError}
                 aria-describedby={validationError ? "url-error" : undefined}
                 autoComplete="url"
@@ -176,7 +176,7 @@ export function ScannerForm({ onScanComplete }: ScannerFormProps) {
               <Button 
                 onClick={handleScan} 
                 disabled={isScanning || !!validationError}
-                className="min-w-[100px] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                className="h-12 px-6 min-w-[120px] text-base font-semibold focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 sm:min-w-[100px] sm:text-sm"
                 aria-label={isScanning ? 'Scanning in progress' : 'Start security and performance scan'}
               >
                 {isScanning ? 'Scanning...' : 'Start Scan'}
@@ -192,13 +192,14 @@ export function ScannerForm({ onScanComplete }: ScannerFormProps) {
             
             {!isScanning && !url && (
               <div className="flex flex-wrap gap-2 text-xs">
-                <span className="text-muted-foreground">Try:</span>
+                <span className="text-muted-foreground w-full sm:w-auto mb-1 sm:mb-0">Try these examples:</span>
                 {['example.com', 'google.com', 'https://github.com', 'http://httpforever.com'].map((demoUrl) => (
                   <button
                     key={demoUrl}
                     type="button"
                     onClick={() => setUrl(demoUrl)}
-                    className="px-2 py-1 bg-muted hover:bg-muted/80 rounded text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
+                    className="px-2 py-1 bg-muted hover:bg-muted-foreground/20 text-muted-foreground hover:text-foreground rounded text-xs transition-colors duration-200 focus:outline-none focus:ring-1 focus:ring-primary"
+                    tabIndex={0}
                     aria-label={`Use example URL: ${demoUrl}`}
                   >
                     {demoUrl}
@@ -217,40 +218,42 @@ export function ScannerForm({ onScanComplete }: ScannerFormProps) {
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Scan Progress</span>
-                  <span className="text-sm text-muted-foreground">{Math.round(progress)}%</span>
+                  <span className="text-sm text-muted-foreground font-mono">{Math.round(progress)}%</span>
                 </div>
-                <Progress value={progress} className="h-2" />
+                <Progress value={progress} className="h-3" />
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {scanStages.map((stage, index) => (
                   <motion.div
                     key={stage.key}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
+                    className={`flex items-start sm:items-center gap-3 p-3 rounded-lg transition-all ${
                       index < currentStage
-                        ? 'bg-green-50 dark:bg-green-950/20'
+                        ? 'bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800'
                         : index === currentStage
-                        ? 'bg-blue-50 dark:bg-blue-950/20'
-                        : 'bg-muted/20'
+                        ? 'bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800'
+                        : 'bg-muted/20 border border-transparent'
                     }`}
                   >
-                    {index < currentStage ? (
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                    ) : index === currentStage ? (
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                        className="h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full"
-                      />
-                    ) : (
-                      <div className="h-5 w-5 border-2 border-muted rounded-full" />
-                    )}
-                    <div>
-                      <div className="font-medium text-sm">{stage.label}</div>
-                      <div className="text-xs text-muted-foreground">{stage.description}</div>
+                    <div className="flex-shrink-0 mt-0.5 sm:mt-0">
+                      {index < currentStage ? (
+                        <CheckCircle className="h-5 w-5 text-green-500" />
+                      ) : index === currentStage ? (
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                          className="h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full"
+                        />
+                      ) : (
+                        <div className="h-5 w-5 border-2 border-muted rounded-full" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm text-foreground">{stage.label}</div>
+                      <div className="text-xs text-muted-foreground mt-0.5 break-words">{stage.description}</div>
                     </div>
                   </motion.div>
                 ))}
@@ -262,12 +265,12 @@ export function ScannerForm({ onScanComplete }: ScannerFormProps) {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-2 p-4 border border-red-200 bg-red-50 dark:bg-red-950/20 dark:border-red-800 rounded-lg"
+              className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 border border-red-200 bg-red-50 dark:bg-red-950/20 dark:border-red-800 rounded-lg"
             >
-              <AlertTriangle className="h-5 w-5 text-red-500" />
-              <div>
-                <div className="font-medium text-sm text-red-800 dark:text-red-300">Scan Failed</div>
-                <div className="text-sm text-red-600 dark:text-red-400">{error}</div>
+              <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <div className="font-medium text-sm text-red-800 dark:text-red-300 mb-1">Scan Failed</div>
+                <div className="text-sm text-red-700 dark:text-red-400 break-words">{error}</div>
               </div>
             </motion.div>
           )}

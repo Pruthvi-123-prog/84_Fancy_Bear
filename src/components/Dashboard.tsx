@@ -152,45 +152,53 @@ export function Dashboard({ scanResult, onNewScan, onExportPDF }: DashboardProps
   );
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-8 pb-16">
+    <div className="container-full space-y-6 sm:space-y-8 pb-16">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 bg-neutral-900/60 backdrop-blur-md border border-neutral-800 rounded-xl p-6 shadow-lg"
+        className="flex flex-col gap-4 sm:gap-6 bg-neutral-900/60 backdrop-blur-md border border-neutral-800 rounded-xl p-4 sm:p-6 shadow-lg"
       >
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 text-transparent bg-clip-text font-heading">Scan Results</h1>
-          <div className="flex flex-wrap items-center gap-3 text-neutral-400 mt-2">
-            <div className="flex items-center gap-2">
-              <div className="p-1 rounded-md bg-neutral-800">
-                <ExternalLink className="h-4 w-4 text-blue-400" />
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 text-transparent bg-clip-text font-heading">
+              Scan Results
+            </h1>
+            <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2 sm:gap-3 text-neutral-400 mt-2">
+              <div className="flex items-center gap-2">
+                <div className="p-1 rounded-md bg-neutral-800 flex-shrink-0">
+                  <ExternalLink className="h-4 w-4 text-blue-400" />
+                </div>
+                <span className="truncate max-w-[250px] sm:max-w-md font-mono text-sm break-all">
+                  {scanResult.url}
+                </span>
               </div>
-              <span className="truncate max-w-[200px] sm:max-w-md font-mono text-sm">{scanResult.url}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="p-1 rounded-md bg-neutral-800">
-                <Clock className="h-4 w-4 text-purple-400" />
+              <div className="flex items-center gap-2">
+                <div className="p-1 rounded-md bg-neutral-800 flex-shrink-0">
+                  <Clock className="h-4 w-4 text-purple-400" />
+                </div>
+                <span className="font-mono text-sm">
+                  {new Date(scanResult.date).toLocaleDateString()} {new Date(scanResult.date).toLocaleTimeString()}
+                </span>
               </div>
-              <span className="font-mono text-sm">{new Date(scanResult.date).toLocaleString()}</span>
             </div>
           </div>
-        </div>
-        <div className="flex gap-3 mt-4 sm:mt-0">
-          <Button 
-            onClick={onNewScan} 
-            variant="outline" 
-            className="border-neutral-700 bg-neutral-900 hover:bg-neutral-800 hover:border-neutral-600 text-neutral-200"
-          >
-            New Scan
-          </Button>
-          <Button 
-            onClick={onExportPDF} 
-            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0 flex items-center gap-2"
-          >
-            <Download className="h-4 w-4" />
-            Export PDF
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <Button 
+              onClick={onNewScan} 
+              variant="outline" 
+              className="border-neutral-700 bg-neutral-900 hover:bg-neutral-800 hover:border-neutral-600 text-neutral-200 w-full sm:w-auto"
+            >
+              New Scan
+            </Button>
+            <Button 
+              onClick={onExportPDF} 
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0 flex items-center justify-center gap-2 w-full sm:w-auto"
+            >
+              <Download className="h-4 w-4" />
+              Export PDF
+            </Button>
+          </div>
         </div>
       </motion.div>
 
@@ -199,14 +207,17 @@ export function Dashboard({ scanResult, onNewScan, onExportPDF }: DashboardProps
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
+        className="px-2 sm:px-0"
       >
         <Card className="border border-neutral-800 bg-gradient-to-r from-neutral-900 to-neutral-900/80 overflow-hidden relative shadow-2xl">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-indigo-500/5 to-purple-500/5"></div>
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.1),transparent_50%)]"></div>
           
-          <CardHeader className="text-center relative z-10">
-            <CardTitle className="text-xl font-heading text-neutral-200">Overall Website Health</CardTitle>
-            <div className={`text-7xl font-bold mt-4 ${
+          <CardHeader className="text-center relative z-10 px-4 sm:px-6 py-6 sm:py-8">
+            <CardTitle className="text-lg sm:text-xl font-heading text-neutral-200 mb-4">
+              Overall Website Health
+            </CardTitle>
+            <div className={`text-5xl sm:text-6xl lg:text-7xl font-bold mt-2 sm:mt-4 ${
               overallScore >= 80 ? "text-emerald-400" : 
               overallScore >= 60 ? "text-blue-400" : 
               overallScore >= 40 ? "text-amber-400" : 
@@ -214,7 +225,7 @@ export function Dashboard({ scanResult, onNewScan, onExportPDF }: DashboardProps
             }`}>
               {overallScore}
             </div>
-            <CardDescription className="text-lg mt-2 font-body text-neutral-400">
+            <CardDescription className="text-base sm:text-lg mt-2 font-body text-neutral-400">
               {getScoreLabel(overallScore)} website health
             </CardDescription>
           </CardHeader>
@@ -222,7 +233,7 @@ export function Dashboard({ scanResult, onNewScan, onExportPDF }: DashboardProps
       </motion.div>
 
       {/* Score Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 px-2 sm:px-0">
         <ScoreCard
           title="Security"
           score={scanResult.security.score}
@@ -231,12 +242,14 @@ export function Dashboard({ scanResult, onNewScan, onExportPDF }: DashboardProps
           details={
             <div className="space-y-1 max-h-32 overflow-y-auto">
               {scanResult.security.checks.slice(0, 5).map((check, index) => (
-                <div key={index} className={`text-xs flex items-center gap-1 ${
+                <div key={index} className={`text-xs flex items-start sm:items-center gap-1 ${
                   check.status === 'pass' ? 'text-green-600' : 
                   check.status === 'warning' ? 'text-yellow-600' : 'text-red-600'
                 }`}>
-                  {check.status === 'pass' ? '✓' : check.status === 'warning' ? '⚠' : '✗'}
-                  <span className="truncate">{check.name}</span>
+                  <span className="flex-shrink-0 mt-0.5 sm:mt-0">
+                    {check.status === 'pass' ? '✓' : check.status === 'warning' ? '⚠' : '✗'}
+                  </span>
+                  <span className="break-words text-xs">{check.name}</span>
                 </div>
               ))}
               {scanResult.security.checks.length > 5 && (
