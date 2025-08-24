@@ -57,7 +57,7 @@ export class WebsiteScanner {
       // as it means the server is reachable
       return response;
       
-  } catch (error: unknown) {
+          } catch (error: unknown) {
       console.log(`Connection failed with ${this.protocol}, trying fallback...`);
       
       // If HTTPS fails, try HTTP
@@ -73,7 +73,7 @@ export class WebsiteScanner {
           this.protocol = 'http:';
           console.log('Successfully connected with HTTP');
           return response;
-        } catch (httpError) {
+        } catch {
           console.log('Both HTTPS and HTTP failed');
           // Return the original error for better debugging
           throw error;
@@ -92,7 +92,7 @@ export class WebsiteScanner {
           this.protocol = 'https:';
           console.log('Successfully connected with HTTPS');
           return response;
-        } catch (httpsError) {
+        } catch {
           console.log('Both HTTP and HTTPS failed');
           // Return the original error
           throw error;
@@ -117,7 +117,7 @@ export class WebsiteScanner {
 
       // Perform all checks in parallel for speed, but don't skip any
       const [securityResults, performanceResults, seoResults, accessibilityResults] = await Promise.all([
-        this.checkSecurityFast(response, $),
+        this.checkSecurityFast(response),
         Promise.resolve(this.checkPerformance(response, loadTime, $)),
         this.checkSEOFast($),
         Promise.resolve(this.checkAccessibility($))
@@ -190,11 +190,11 @@ export class WebsiteScanner {
   private async checkSecurity(response: AxiosResponse, $: cheerio.CheerioAPI): Promise<SecurityCheck[]> {
     const checks: SecurityCheck[] = [];
     const headers = response.headers;
-    const htmlContent = $.html();
+    // Note: htmlContent is not currently used in this function
     const statusCode = response.status;
 
     // OWASP Top 10 - 1. Broken Access Control
-    await this.checkBrokenAccessControl(checks, response, $);
+    await this.checkBrokenAccessControl(checks, response);
 
     // OWASP Top 10 - 2. Cryptographic Failures
     await this.checkCryptographicFailures(checks, response, $);
@@ -203,10 +203,10 @@ export class WebsiteScanner {
     await this.checkInjectionVulnerabilities(checks, response, $);
 
     // Additional Active Vulnerability Testing
-    await this.performComprehensiveVulnerabilityTest(checks, response, $);
+    await this.performComprehensiveVulnerabilityTest(checks);
 
     // OWASP Top 10 - 4. Insecure Design
-    this.checkInsecureDesign(checks, response, $);
+    this.checkInsecureDesign(checks, response);
 
     // OWASP Top 10 - 5. Security Misconfiguration
     this.checkSecurityMisconfiguration(checks, headers, statusCode);
@@ -221,7 +221,7 @@ export class WebsiteScanner {
     this.checkDataIntegrityFailures(checks, response, $);
 
     // OWASP Top 10 - 9. Security Logging and Monitoring Failures
-    this.checkLoggingMonitoringFailures(checks, response, $);
+    this.checkLoggingMonitoringFailures(checks, response);
 
     // OWASP Top 10 - 10. Server-Side Request Forgery (SSRF)
     await this.checkSSRFVulnerabilities(checks, response, $);
@@ -366,7 +366,7 @@ export class WebsiteScanner {
 
     // Check for robots.txt
     try {
-      const robotsResponse = await axios.get(`${this.baseUrl}/robots.txt`, { 
+      await axios.get(`${this.baseUrl}/robots.txt`, { 
         timeout: 10000,
         headers: {
           'User-Agent': 'AuditX/1.0 Mozilla/5.0 (compatible; website scanner)',
@@ -478,7 +478,7 @@ export class WebsiteScanner {
     return checks;
   }
 
-  private async checkSecurityFast(response: AxiosResponse, $: cheerio.CheerioAPI): Promise<SecurityCheck[]> {
+  private async checkSecurityFast(response: AxiosResponse): Promise<SecurityCheck[]> {
     const checks: SecurityCheck[] = [];
 
     // Quick security headers check (no external requests needed)
@@ -700,7 +700,7 @@ export class WebsiteScanner {
     });
 
     let imagesWithoutAlt = 0;
-  imgTags.each((index: number, img: cheerio.Element) => {
+    imgTags.each((index: number, img) => {
       if (!$(img).attr('alt')) {
         imagesWithoutAlt++;
       }
@@ -796,7 +796,7 @@ export class WebsiteScanner {
   }
 
   // OWASP Top 10 - 1. Broken Access Control
-  private async checkBrokenAccessControl(checks: SecurityCheck[], response: AxiosResponse, $: cheerio.CheerioAPI): Promise<void> {
+  private async checkBrokenAccessControl(checks: SecurityCheck[], response: AxiosResponse): Promise<void> {
     const url = new URL(this.url);
     
     // Enhanced admin paths check with more common paths
@@ -995,18 +995,10 @@ export class WebsiteScanner {
     const csp = response.headers['content-security-policy'];
     
     // Active XSS testing
-    await this.performActiveXSSTest(checks, $, response);
+    await this.performActiveXSSTest(checks, $);
     
     // Check for XSS indicators in the HTML
-    const xssIndicators = [
-      /<script[^>]*>[\s\S]*?<\/script>/gi,
-      /javascript:/gi,
-      /on\w+\s*=/gi, // event handlers
-      /eval\s*\(/gi,
-      /document\.write/gi
-    ];
-    
-    const reflectedContent = htmlContent.includes('test') || htmlContent.includes('script') || htmlContent.includes('alert');
+    // Note: XSS indicators are checked in the active XSS test
     
     checks.push({
       name: 'Injection - XSS Protection',
@@ -1148,7 +1140,6 @@ export class WebsiteScanner {
           /ora-\d{5}/i,
           /microsoft.*odbc/i,
           /sqlite.*error/i,
-          /warning.*mysql/i,
           /syntax error.*near/i,
           /unclosed quotation mark/i
         ];
@@ -1160,7 +1151,7 @@ export class WebsiteScanner {
           vulnerableForms.push(action);
         }
 
-      } catch (error) {
+      } catch {
         // Connection error, skip this form
         continue;
       }
@@ -1179,7 +1170,7 @@ export class WebsiteScanner {
   }
 
   // Active XSS Testing
-  private async performActiveXSSTest(checks: SecurityCheck[], $: cheerio.CheerioAPI, originalResponse: AxiosResponse): Promise<void> {
+  private async performActiveXSSTest(checks: SecurityCheck[], $: cheerio.CheerioAPI): Promise<void> {
     const forms = $('form');
     let xssVulnerable = false;
     const vulnerableForms: string[] = [];
@@ -1252,7 +1243,7 @@ export class WebsiteScanner {
           vulnerableForms.push(action);
         }
 
-      } catch (error) {
+      } catch {
         // Connection error, skip this form
         continue;
       }
@@ -1271,7 +1262,7 @@ export class WebsiteScanner {
   }
 
   // Comprehensive Active Vulnerability Testing
-  private async performComprehensiveVulnerabilityTest(checks: SecurityCheck[], response: AxiosResponse, $: cheerio.CheerioAPI): Promise<void> {
+  private async performComprehensiveVulnerabilityTest(checks: SecurityCheck[]): Promise<void> {
     const url = new URL(this.url);
     
     // Test for SQL injection in URL parameters
@@ -1350,9 +1341,7 @@ export class WebsiteScanner {
 
           const hasSQLError = sqlErrorIndicators.some(pattern => pattern.test(responseText));
           
-          // Check for different response length or content changes (blind SQL injection indicator)
-          const originalUrl = new URL(baseUrl.toString());
-          originalUrl.searchParams.set(param, 'normal_value');
+          // Note: Blind SQL injection detection could be implemented here
           
           if (hasSQLError) {
             sqlVulnerabilityFound = true;
@@ -1366,7 +1355,7 @@ export class WebsiteScanner {
           // Small delay to avoid overwhelming the server
           await new Promise(resolve => setTimeout(resolve, 200));
 
-        } catch (error) {
+        } catch {
           // Request failed, continue to next
           continue;
         }
@@ -1425,7 +1414,7 @@ export class WebsiteScanner {
           // Small delay
           await new Promise(resolve => setTimeout(resolve, 100));
 
-        } catch (error) {
+        } catch {
           continue;
         }
       }
@@ -1482,7 +1471,7 @@ export class WebsiteScanner {
         // Small delay
         await new Promise(resolve => setTimeout(resolve, 150));
 
-      } catch (error) {
+      } catch {
         // Endpoint not accessible
         continue;
       }
@@ -1501,7 +1490,7 @@ export class WebsiteScanner {
   }
 
   // OWASP Top 10 - 4. Insecure Design
-  private checkInsecureDesign(checks: SecurityCheck[], response: AxiosResponse, $: cheerio.CheerioAPI): void {
+  private checkInsecureDesign(checks: SecurityCheck[], response: AxiosResponse): void {
     // Check for security.txt file
     // Note: This would require a separate request in a full implementation
     
@@ -1845,7 +1834,7 @@ export class WebsiteScanner {
   }
 
   // OWASP Top 10 - 9. Security Logging and Monitoring Failures
-  private checkLoggingMonitoringFailures(checks: SecurityCheck[], response: AxiosResponse, $: cheerio.CheerioAPI): void {
+  private checkLoggingMonitoringFailures(checks: SecurityCheck[], response: AxiosResponse): void {
     // Check for security monitoring headers
     const monitoringHeaders = [
       'x-request-id',
