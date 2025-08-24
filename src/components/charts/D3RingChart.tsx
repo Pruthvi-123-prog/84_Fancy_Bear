@@ -95,47 +95,47 @@ export const D3RingChart: React.FC<D3RingChartProps> = ({ data, isPreview = fals
           .padAngle(0.025)
           .cornerRadius(4);
 
-        const pie = d3.pie()
-          .value((d: any) => d.score)
+        const pie = d3.pie<number>()
+          .value((score) => score)
           .sort(null);
 
         const ringData = data.slice(ring * 2, (ring + 1) * 2);
-        
+        const pieData = pie(ringData.map(d => d.score));
         const arcs = svg.selectAll(`.arc-${ring}`)
-          .data(pie(ringData as any))
+          .data(pieData)
           .enter()
           .append('g')
           .attr('class', 'arc')
           .style('cursor', 'pointer');
 
         arcs.append('path')
-          .attr('d', arc as any)
-          .attr('fill', (d: any, i: number) => `url(#gradient-${i + (ring * 2)})`)
+          .attr('d', function(d) { return arc(d as unknown as d3.DefaultArcObject); })
+          .attr('fill', (d, i) => `url(#gradient-${i + (ring * 2)})`)
           .attr('stroke', '#1e293b')
           .attr('stroke-width', 2)
           .style('transition', 'all 0.3s')
-          .on('mouseover', function(event: any, d: any) {
+          .on('mouseover', function(event, d) {
             const el = d3.select(this);
             el.transition()
               .duration(200)
-              .attr('transform', function(d: any) {
-                const [x, y] = (arc as any).centroid(d);
+              .attr('transform', function() {
+                const [x, y] = arc.centroid(d as unknown as d3.DefaultArcObject);
                 return `translate(${x * 0.05},${y * 0.05})`;
               })
               .style('filter', 'brightness(1.2)');
 
-            // Update center text
+            // Update center text using ringData[d.index]
             centerText.select('.main-label')
-              .text(d.data.name)
+              .text(ringData[d.index].name)
               .transition()
               .duration(200)
               .style('font-size', isPreview ? '12px' : '16px');
 
             centerText.select('.sub-label')
-              .text(`Score: ${d.data.score}`)
+              .text(`Score: ${ringData[d.index].score}`)
               .transition()
               .duration(200)
-              .style('fill', d.data.color);
+              .style('fill', ringData[d.index].color);
           })
           .on('mouseout', function() {
             d3.select(this)

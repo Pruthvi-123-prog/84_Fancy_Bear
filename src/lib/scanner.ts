@@ -20,7 +20,7 @@ export class WebsiteScanner {
 
   private processUrlInput(input: string): string {
     // Remove any trailing slashes and whitespace
-    let cleanInput = input.trim().replace(/\/$/, '');
+    const cleanInput = input.trim().replace(/\/$/, '');
     
     // If it already has a protocol (http:// or https://), use as-is
     if (cleanInput.startsWith('http://') || cleanInput.startsWith('https://')) {
@@ -57,7 +57,7 @@ export class WebsiteScanner {
       // as it means the server is reachable
       return response;
       
-    } catch (error: any) {
+  } catch (error: unknown) {
       console.log(`Connection failed with ${this.protocol}, trying fallback...`);
       
       // If HTTPS fails, try HTTP
@@ -109,7 +109,7 @@ export class WebsiteScanner {
     
     try {
       // Try HTTPS first, fallback to HTTP if needed
-      let response = await this.fetchWithFallback();
+      const response = await this.fetchWithFallback();
       
       const $ = cheerio.load(response.data);
       const endTime = Date.now();
@@ -700,7 +700,7 @@ export class WebsiteScanner {
     });
 
     let imagesWithoutAlt = 0;
-    imgTags.each((index: number, img: any) => {
+  imgTags.each((index: number, img: cheerio.Element) => {
       if (!$(img).attr('alt')) {
         imagesWithoutAlt++;
       }
@@ -1148,6 +1148,7 @@ export class WebsiteScanner {
           /ora-\d{5}/i,
           /microsoft.*odbc/i,
           /sqlite.*error/i,
+          /warning.*mysql/i,
           /syntax error.*near/i,
           /unclosed quotation mark/i
         ];

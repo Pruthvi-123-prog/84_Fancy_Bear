@@ -88,7 +88,7 @@ export const Advanced3DBarChart: React.FC<Advanced3DBarChartProps> = ({
         name: item.name,
         y: item.score,
         color: item.color
-      })) as any,
+      })) as Highcharts.PointOptionsObject[],
       borderRadius: 2,
       borderWidth: 0,
       shadow: isPreview ? false : {
@@ -111,7 +111,8 @@ export const Advanced3DBarChart: React.FC<Advanced3DBarChartProps> = ({
       borderColor: '#3b82f6',
       borderRadius: 8,
       formatter: function() {
-        return `<b>${(this as any).point.name}</b><br/>Score: <b>${this.y}</b>`;
+  // @ts-ignore
+  return `<b>${this.point.name}</b><br/>Score: <b>${this.y}</b>`;
       }
     },
     plotOptions: {
