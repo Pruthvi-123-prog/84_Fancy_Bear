@@ -3,9 +3,10 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/Pruthvi-123-prog/AuditX/main.yml?branch=main)](https://github.com/Pruthvi-123-prog/AuditX/actions)
 [![npm version](https://img.shields.io/npm/v/auditx)](https://www.npmjs.com/package/auditx)
+[![Stars](https://img.shields.io/github/stars/Pruthvi-123-prog/AuditX?style=social)](https://github.com/Pruthvi-123-prog/AuditX/stargazers)
+[![Forks](https://img.shields.io/github/forks/Pruthvi-123-prog/AuditX?style=social)](https://github.com/Pruthvi-123-prog/AuditX/network/members)
 [![Issues](https://img.shields.io/github/issues/Pruthvi-123-prog/AuditX)](https://github.com/Pruthvi-123-prog/AuditX/issues)
-[![Stars](https://img.shields.io/github/stars/Pruthvi-123-prog/AuditX)](https://github.com/Pruthvi-123-prog/AuditX/stargazers)
-[![Forks](https://img.shields.io/github/forks/Pruthvi-123-prog/AuditX)](https://github.com/Pruthvi-123-prog/AuditX/network/members)
+[![Pull Requests](https://img.shields.io/github/issues-pr/Pruthvi-123-prog/AuditX)](https://github.com/Pruthvi-123-prog/AuditX/pulls)
 
 ---
 
